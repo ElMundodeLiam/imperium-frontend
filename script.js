@@ -4,11 +4,13 @@ let token = '';
 async function registrar() {
   const nombre = document.getElementById('reg-nombre').value;
   const contraseña = document.getElementById('reg-pass').value;
+
   const res = await fetch(`${API}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ nombre, contraseña })
   });
+
   const data = await res.json();
   alert(data.msg || 'Registrado correctamente');
 }
@@ -16,11 +18,13 @@ async function registrar() {
 async function login() {
   const nombre = document.getElementById('login-nombre').value;
   const contraseña = document.getElementById('login-pass').value;
+
   const res = await fetch(`${API}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ nombre, contraseña })
   });
+
   const data = await res.json();
   if (data.token) {
     token = data.token;
