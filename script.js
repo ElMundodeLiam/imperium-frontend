@@ -1,9 +1,9 @@
 const API = 'https://imperium-backend-bpkr.onrender.com/api';
 let token = '';
 
-async function registrar() {
-  const nombre = document.getElementById('reg-nombre').value;
-  const contraseña = document.getElementById('reg-pass').value;
+async function register() {
+  const nombre = document.getElementById('regUsername').value;
+  const contraseña = document.getElementById('regPassword').value;
   const res = await fetch(`${API}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -14,8 +14,8 @@ async function registrar() {
 }
 
 async function login() {
-  const nombre = document.getElementById('login-nombre').value;
-  const contraseña = document.getElementById('login-pass').value;
+  const nombre = document.getElementById('logUsername').value;
+  const contraseña = document.getElementById('logPassword').value;
   const res = await fetch(`${API}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -25,49 +25,27 @@ async function login() {
   if (data.token) {
     token = data.token;
     alert('Login exitoso');
-    obtenerPerfil();
+    showUserPanel(data.nombre);
   } else {
     alert(data.msg || 'Error al iniciar sesión');
   }
 }
 
-async function obtenerPerfil() {
+function showUserPanel(nombre) {
+  document.getElementById('userPanel').style.display = 'block';
+  document.getElementById('welcomeMsg').textContent = `Bienvenido, ${nombre}`;
+}
+
+async function getBalance() {
   const res = await fetch(`${API}/user/perfil`, {
     headers: { 'x-auth-token': token }
   });
   const data = await res.json();
-  document.getElementById('usuario').textContent = data.nombre;
-  document.getElementById('saldo').textContent = data.saldo;
-  document.getElementById('perfil').style.display = 'block';
-  document.getElementById('acciones').style.display = 'block';
+  document.getElementById('balance').textContent = `Saldo: $${data.saldo}`;
 }
 
-async function apostar() {
-  const monto = parseFloat(document.getElementById('apostar-monto').value);
-  const res = await fetch(`${API}/user/apostar`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-auth-token': token
-    },
-    body: JSON.stringify({ monto })
-  });
-  const data = await res.json();
-  alert(data.msg || 'Apuesta realizada');
-  obtenerPerfil();
-}
-
-async function recargar() {
-  const monto = parseFloat(document.getElementById('recargar-monto').value);
-  const res = await fetch(`${API}/user/recargar`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-auth-token': token
-    },
-    body: JSON.stringify({ monto })
-  });
-  const data = await res.json();
-  alert(data.msg || 'Saldo recargado');
-  obtenerPerfil();
+function logout() {
+  token = '';
+  document.getElementById('userPanel').style.display = 'none';
+  alert('Sesión cerrada');
 }
