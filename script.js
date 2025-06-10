@@ -9,7 +9,8 @@ async function registrar() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ nombre, contraseña })
   });
-  alert((await res.json()).msg || 'Registrado correctamente');
+  const data = await res.json();
+  alert(data.msg || 'Registrado correctamente');
 }
 
 async function login() {
