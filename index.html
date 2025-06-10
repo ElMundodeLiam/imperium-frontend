@@ -52,17 +52,15 @@
   <div class="section" id="perfil" style="display:none;">
     <h2>Panel de Usuario</h2>
     <p>Bienvenido, <span id="usuario"></span></p>
-    <p>Saldo: <span id="saldo"></span> créditos</p>
-  </div>
+    <p>Saldo: $<span id="saldo"></span></p>
 
-  <div class="section" id="acciones" style="display:none;">
-    <h3>Recargar</h3>
-    <input id="recargar-monto" type="number" placeholder="Monto" />
-    <button onclick="recargar()">Recargar</button>
+    <div id="acciones">
+      <input id="apostar-monto" placeholder="Monto a apostar" type="number" />
+      <button onclick="apostar()">Apostar</button>
 
-    <h3>Apostar</h3>
-    <input id="apostar-monto" type="number" placeholder="Monto" />
-    <button onclick="apostar()">Apostar</button>
+      <input id="recargar-monto" placeholder="Monto a recargar" type="number" />
+      <button onclick="recargar()">Recargar saldo</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
