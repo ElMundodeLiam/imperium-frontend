@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Imperium Casino</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem; }
+    input, button { display: block; margin: 1rem 0; padding: 0.5rem; width: 100%; }
+    #perfil, #acciones { display: none; border-top: 1px solid #ccc; margin-top: 2rem; padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Imperium Casino 🎰</h1>
+
+  <h2>Registro</h2>
+  <input type="text" id="reg-nombre" placeholder="Nombre de usuario" />
+  <input type="password" id="reg-pass" placeholder="Contraseña" />
+  <button onclick="registrar()">Registrarse</button>
+
+  <h2>Login</h2>
+  <input type="text" id="login-nombre" placeholder="Nombre de usuario" />
+  <input type="password" id="login-pass" placeholder="Contraseña" />
+  <button onclick="login()">Iniciar sesión</button>
+
+  <div id="perfil">
+    <h2>Tu perfil</h2>
+    <p><strong>Usuario:</strong> <span id="usuario"></span></p>
+    <p><strong>Saldo:</strong> $<span id="saldo"></span></p>
+  </div>
+
+  <div id="acciones">
+    <h3>Apostar</h3>
+    <input type="number" id="apostar-monto" placeholder="Monto a apostar" />
+    <button onclick="apostar()">Apostar</button>
+
+    <h3>Recargar</h3>
+    <input type="number" id="recargar-monto" placeholder="Monto a recargar" />
+    <button onclick="recargar()">Recargar saldo</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
