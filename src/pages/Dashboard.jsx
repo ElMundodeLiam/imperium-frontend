@@ -2,33 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
-  const [error, setError] = useState('');
+  const [balance, setBalance] = useState(null);
+  const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
+      if (!token) return navigate('/login');
 
-      const res = await fetch('https://imperium-backend-bpkr.onrender.com/user/me', {
+      const res = await fetch('https://imperium-backend-bpkr.onrender.com/api/user/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (!res.ok) {
-        throw new Error('Error al obtener datos del usuario');
+        localStorage.removeItem('token');
+        return navigate('/login');
       }
 
       const data = await res.json();
-      setUser(data);
+      setUsername(data.username);
+      setBalance(data.balance);
     } catch (err) {
-      console.error(err);
-      setError('No se pudo cargar la información del usuario');
+      console.error('Error al obtener perfil:', err);
+      navigate('/login');
     }
   };
 
@@ -41,27 +40,7 @@ const Dashboard = () => {
     fetchUserData();
   }, []);
 
-  if (error) {
-    return <div className="text-red-500 text-center mt-10">{error}</div>;
-  }
-
-  if (!user) {
-    return <div className="text-center mt-10">Cargando...</div>;
-  }
-
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-4 text-center">Panel de Usuario</h1>
-      <p className="mb-2"><strong>Usuario:</strong> {user.username}</p>
-      <p className="mb-4"><strong>Saldo:</strong> ${user.balance}</p>
-      <button
-        onClick={handleLogout}
-        className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
-      >
-        Cerrar sesión
-      </button>
-    </div>
-  );
-};
-
-export default Dashboard;
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white px-4">
+      <h1 className="text-3xl font-bold mb-4">Bienvenido, {username}</h1>
+      <p className="text-xl mb-6">Tu saldo: <span className="font-semibold">${balance}</
