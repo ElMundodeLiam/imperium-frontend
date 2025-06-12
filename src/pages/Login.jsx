@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
+function Login() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -12,58 +14,63 @@ const Login = ({ onLogin }) => {
 
     try {
       const response = await axios.post('https://imperium-backend-bpkr.onrender.com/api/auth/login', {
-        username,
+        email,
         password,
       });
 
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        onLogin(); // Cambia al dashboard u otra vista
-      } else {
-        setError('Respuesta inesperada del servidor');
-      }
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+      navigate('/dashboard');
     } catch (err) {
-      console.error('Error al iniciar sesión:', err);
-      setError(err.response?.data?.error || 'Error de conexión con el servidor');
+      setError('Credenciales inválidas');
+      console.error(err);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white px-4">
-      <div className="bg-gray-800 p-8 rounded-xl shadow-xl w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
+      <div className="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm mb-1">Usuario</label>
+            <label className="block mb-1">Correo electrónico</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
+              className="w-full px-4 py-2 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              placeholder="correo@ejemplo.com"
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Contraseña</label>
+            <label className="block mb-1">Contraseña</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
               required
+              className="w-full px-4 py-2 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              placeholder="********"
             />
           </div>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded transition duration-300"
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-xl transition duration-200"
           >
-            Iniciar sesión
+            Iniciar Sesión
           </button>
         </form>
+        <p className="text-center mt-4 text-sm">
+          ¿No tienes una cuenta?{' '}
+          <a href="/register" className="text-yellow-400 hover:underline">
+            Regístrate aquí
+          </a>
+        </p>
       </div>
     </div>
   );
-};
+}
 
 export default Login;
