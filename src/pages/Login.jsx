@@ -1,56 +1,79 @@
-// src/pages/Login.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Login() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+const API_URL = import.meta.env.VITE_API_URL || 'https://imperium-backend-bpkr.onrender.com';
+
+const Login = () => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
+
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      localStorage.setItem('token', data.token);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.message);
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (err) {
+        data = { error: 'Respuesta inválida del servidor' };
+      }
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        navigate('/dashboard');
+      } else {
+        alert(data.error || 'Error al iniciar sesión');
+      }
+    } catch (error) {
+      console.error('Error de red o servidor:', error);
+      alert('Error de red o servidor');
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">
-      <h2 className="text-3xl font-bold mb-6">Iniciar Sesión</h2>
-      <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-gray-900 text-white">
+      <form onSubmit={handleLogin} className="bg-white bg-opacity-5 p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
+
         <input
-          type="email"
-          placeholder="Correo electrónico"
-          className="w-full p-2 rounded text-black"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          type="text"
+          placeholder="Usuario"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full p-3 mb-4 rounded bg-black text-white border border-gray-600"
         />
+
         <input
           type="password"
           placeholder="Contraseña"
-          className="w-full p-2 rounded text-black"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
+          className="w-full p-3 mb-6 rounded bg-black text-white border border-gray-600"
         />
-        {error && <p className="text-red-400">{error}</p>}
-        <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded">
-          Iniciar sesión
+
+        <button
+          type="submit"
+          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
+        >
+          Ingresar
         </button>
+
+        <p className="mt-4 text-center text-sm">
+          ¿No tienes una cuenta?{' '}
+          <a href="/register" className="text-yellow-400 hover:underline">
+            Regístrate aquí
+          </a>
+        </p>
       </form>
     </div>
   );
-}
+};
+
+export default Login;
