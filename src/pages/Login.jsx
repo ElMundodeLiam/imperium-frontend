@@ -1,72 +1,67 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const response = await fetch('https://imperium-backend-bpkr.onrender.com/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+      const response = await axios.post('https://imperium-backend-bpkr.onrender.com/api/auth/login', {
+        username,
+        password,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.error || 'Error al iniciar sesión');
-        return;
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        onLogin(); // Cambia al dashboard u otra vista
+      } else {
+        setError('Respuesta inesperada del servidor');
       }
-
-      const data = await response.json();
-      localStorage.setItem('token', data.token);
-      navigate('/dashboard');
     } catch (err) {
-      setError('Error de conexión con el servidor');
+      console.error('Error al iniciar sesión:', err);
+      setError(err.response?.data?.error || 'Error de conexión con el servidor');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <form onSubmit={handleLogin} className="bg-zinc-900 p-8 rounded-xl shadow-lg w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
-        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
-
-        <input
-          type="text"
-          placeholder="Usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-3 mb-4 rounded bg-zinc-800 text-white placeholder-zinc-400"
-        />
-
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-6 rounded bg-zinc-800 text-white placeholder-zinc-400"
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded transition"
-        >
-          Iniciar sesión
-        </button>
-
-        <div className="mt-4 text-center">
-          <a href="/register" className="text-sm text-yellow-400 hover:underline">
-            ¿No tienes cuenta? Regístrate
-          </a>
-        </div>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white px-4">
+      <div className="bg-gray-800 p-8 rounded-xl shadow-xl w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
+        <form onSubmit={handleLogin} className="space-y-5">
+          <div>
+            <label className="block text-sm mb-1">Usuario</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-1">Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              required
+            />
+          </div>
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded transition duration-300"
+          >
+            Iniciar sesión
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
