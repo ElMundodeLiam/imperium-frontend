@@ -1,57 +1,67 @@
-// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Dashboard() {
-  const navigate = useNavigate();
+const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const fetchProfile = async () => {
+  const fetchUserData = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const res = await fetch('https://imperium-backend-bpkr.onrender.com/user/me', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
       });
+
+      if (!res.ok) {
+        throw new Error('Error al obtener datos del usuario');
+      }
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
       setUser(data);
     } catch (err) {
-      setError(err.message);
+      console.error(err);
+      setError('No se pudo cargar la información del usuario');
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) navigate('/login');
-    else fetchProfile();
-  }, []);
-
-  const logout = () => {
+  const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
-  return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Panel de Usuario</h1>
-        {error && <p className="text-red-400">{error}</p>}
-        {user ? (
-          <div className="space-y-4">
-            <p><strong>Usuario:</strong> {user.username}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Saldo:</strong> ${user.balance.toFixed(2)}</p>
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
-            <button onClick={logout} className="bg-red-600 px-4 py-2 rounded hover:bg-red-700">
-              Cerrar sesión
-            </button>
-          </div>
-        ) : (
-          <p>Cargando datos...</p>
-        )}
-      </div>
+  if (error) {
+    return <div className="text-red-500 text-center mt-10">{error}</div>;
+  }
+
+  if (!user) {
+    return <div className="text-center mt-10">Cargando...</div>;
+  }
+
+  return (
+    <div className="max-w-md mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg">
+      <h1 className="text-2xl font-bold mb-4 text-center">Panel de Usuario</h1>
+      <p className="mb-2"><strong>Usuario:</strong> {user.username}</p>
+      <p className="mb-4"><strong>Saldo:</strong> ${user.balance}</p>
+      <button
+        onClick={handleLogout}
+        className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+      >
+        Cerrar sesión
+      </button>
     </div>
   );
-}
+};
+
+export default Dashboard;
