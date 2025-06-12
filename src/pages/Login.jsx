@@ -1,30 +1,34 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const response = await fetch('https://imperium-backend-bpkr.onrender.com/api/auth/login', {
+      const res = await fetch('https://imperium-backend-bpkr.onrender.com/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Error de conexión con el servidor');
-        return;
+      if (!res.ok) {
+        const errData = await res.json();
+        return setError(errData.error || 'Error al iniciar sesión');
       }
 
+      const data = await res.json();
       localStorage.setItem('token', data.token);
       navigate('/dashboard');
     } catch (err) {
@@ -33,55 +37,43 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black text-white">
-      <form
-        onSubmit={handleLogin}
-        className="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md space-y-4"
-      >
-        <h2 className="text-3xl font-bold text-center">Iniciar Sesión</h2>
-
-        {error && (
-          <div className="bg-red-500 text-white p-2 rounded text-center">{error}</div>
-        )}
-
-        <div>
-          <label className="block mb-1">Usuario</label>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
+        {error && <p className="text-red-500 text-sm mb-3 text-center">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white"
-            placeholder="Tu nombre de usuario"
+            name="username"
+            placeholder="Usuario"
+            value={form.username}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded"
             required
           />
-        </div>
-
-        <div>
-          <label className="block mb-1">Contraseña</label>
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white"
-            placeholder="Tu contraseña"
+            name="password"
+            placeholder="Contraseña"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded"
             required
           />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
-        >
-          Iniciar Sesión
-        </button>
-
-        <div className="text-center mt-4">
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
+          >
+            Entrar
+          </button>
+        </form>
+        <p className="mt-4 text-center text-sm">
           ¿No tienes cuenta?{' '}
-          <a href="/register" className="text-yellow-400 hover:underline">
-            Regístrate
-          </a>
-        </div>
-      </form>
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Regístrate aquí
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
