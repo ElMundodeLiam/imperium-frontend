@@ -1,75 +1,76 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-const Register = () => {
+function Register() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError('');
 
     try {
-      const response = await fetch('https://imperium-backend-bpkr.onrender.com/api/auth/register', {
+      const res = await fetch('https://imperium-backend-bpkr.onrender.com/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al registrarse');
+      if (!res.ok) {
+        setError(data.error || 'Error al registrar');
+        return;
       }
 
+      alert('Registro exitoso. Inicia sesión.');
       navigate('/login');
     } catch (err) {
-      setError(err.message);
+      console.error(err);
+      setError('Error de conexión con el servidor');
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
-      <form onSubmit={handleRegister} className="bg-gray-800 p-8 rounded-lg shadow-lg w-80">
-        <h2 className="text-2xl font-bold mb-4">Registro</h2>
-        {error && <p className="text-red-500 mb-2">{error}</p>}
-        <input
-          type="text"
-          placeholder="Nombre de usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-2 mb-4 rounded bg-gray-700 text-white"
-          required
-        />
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 mb-4 rounded bg-gray-700 text-white"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 mb-4 rounded bg-gray-700 text-white"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
-        >
-          Registrarse
-        </button>
-      </form>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white px-4">
+      <div className="bg-gray-900 p-6 rounded-2xl shadow-lg w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-4 text-center">Registro</h1>
+        <form onSubmit={handleRegister} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none"
+            required
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button
+            type="submit"
+            className="w-full p-2 rounded bg-indigo-600 hover:bg-indigo-700 font-semibold"
+          >
+            Registrarse
+          </button>
+        </form>
+        <p className="mt-4 text-center text-sm text-gray-400">
+          ¿Ya tienes cuenta?{' '}
+          <Link to="/login" className="text-indigo-400 hover:underline">
+            Iniciar sesión
+          </Link>
+        </p>
+      </div>
     </div>
   );
-};
+}
 
 export default Register;
