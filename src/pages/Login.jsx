@@ -1,80 +1,83 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/pages/Login.jsx import { useState } from 'react'; import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+export default function Login() { const [username, setUsername] = useState(''); const [password, setPassword] = useState(''); const [error, setError] = useState(''); const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+const handleLogin = async (e) => { e.preventDefault(); setError('');
 
-    try {
-      const res = await fetch('https://imperium-backend.onrender.com/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+try {
+  const res = await fetch('https://imperium-backend-bpkr.onrender.com/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, password }),
+  });
 
-      const data = await res.json();
+  const data = await res.json();
 
-      if (res.ok) {
-        localStorage.setItem('token', data.token);
-        navigate('/dashboard');
-      } else {
-        setError(data.message || 'Credenciales inválidas');
-      }
-    } catch (err) {
-      setError('Error de conexión con el servidor');
-    }
-  };
+  if (!res.ok) {
+    throw new Error(data.error || 'Error al iniciar sesión');
+  }
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Iniciar Sesión</h2>
+  localStorage.setItem('token', data.token);
+  navigate('/dashboard');
+} catch (err) {
+  setError(err.message);
+}
 
-        {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
-
-        <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            placeholder="Usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded text-black mb-4"
-            required
-          />
-
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded text-black mb-6"
-            required
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
-          >
-            Iniciar Sesión
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-gray-600">
-          ¿No tienes cuenta?{' '}
-          <a href="/register" className="text-blue-600 hover:underline">
-            Regístrate aquí
-          </a>
-        </p>
-      </div>
-    </div>
-  );
 };
 
-export default Login;
+return ( <div className="flex items-center justify-center h-screen bg-gray-100"> <form
+onSubmit={handleLogin}
+className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-sm w-full"
+> <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
+
+{error && <div className="mb-4 text-red-600 text-sm text-center">{error}</div>}
+
+    <div className="mb-4">
+      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+        Usuario
+      </label>
+      <input
+        id="username"
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        required
+      />
+    </div>
+
+    <div className="mb-6">
+      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+        Contraseña
+      </label>
+      <input
+        id="password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+        required
+      />
+    </div>
+
+    <div className="flex items-center justify-between">
+      <button
+        type="submit"
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      >
+        Iniciar Sesión
+      </button>
+      <a
+        href="/register"
+        className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+      >
+        ¿Registrarse?
+      </a>
+    </div>
+  </form>
+</div>
+
+); }
+
