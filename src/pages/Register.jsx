@@ -1,74 +1,72 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError('');
 
     try {
-      const res = await fetch('https://imperium-backend-bpkr.onrender.com/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+      const response = await axios.post("https://imperium-backend-bpkr.onrender.com/api/auth/register", {
+        email,
+        password,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Error al registrar');
-        return;
+      if (response.data.token) {
+        setMessage("Registro exitoso. Ahora puedes iniciar sesión.");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       }
-
-      alert('Registro exitoso. Inicia sesión.');
-      navigate('/login');
-    } catch (err) {
-      console.error(err);
-      setError('Error de conexión con el servidor');
+    } catch (error) {
+      if (error.response?.data?.message) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Error al registrar.");
+      }
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white px-4">
-      <div className="bg-gray-900 p-6 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4 text-center">Registro</h1>
-        <form onSubmit={handleRegister} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 rounded bg-gray-800 text-white focus:outline-none"
-            required
-          />
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          <button
-            type="submit"
-            className="w-full p-2 rounded bg-indigo-600 hover:bg-indigo-700 font-semibold"
-          >
-            Registrarse
-          </button>
-        </form>
-        <p className="mt-4 text-center text-sm text-gray-400">
-          ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="text-indigo-400 hover:underline">
-            Iniciar sesión
-          </Link>
-        </p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black text-white">
+      <form
+        onSubmit={handleRegister}
+        className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-sm"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center">Registro</h2>
+
+        <input
+          type="email"
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="w-full p-2 mb-4 rounded bg-gray-700 border border-gray-600 text-white"
+        />
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="w-full p-2 mb-4 rounded bg-gray-700 border border-gray-600 text-white"
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded transition"
+        >
+          Registrarse
+        </button>
+
+        {message && <p className="mt-4 text-sm text-center">{message}</p>}
+      </form>
     </div>
   );
 }
