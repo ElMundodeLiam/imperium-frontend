@@ -1,7 +1,7 @@
 {
   "name": "imperium-frontend",
   "version": "1.0.0",
-  "private": true,
+  "description": "Frontend del Casino Online Imperium",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,6 +14,7 @@
     "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.1",
