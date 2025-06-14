@@ -1,75 +1,75 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+// src/pages/Register.jsx
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
 
-  const handleRegister = async (e) => {
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
-        name,
-        email,
-        password,
-      });
-
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        navigate('/dashboard');
+      const res = await axios.post(
+        "https://imperium-backend-bpkr.onrender.com/api/auth/register",
+        formData
+      );
+      if (res.data.message === "Usuario registrado correctamente") {
+        setMessage("Registro exitoso. Redirigiendo...");
+        setTimeout(() => navigate("/login"), 1500);
       } else {
-        setMessage('Registro fallido');
+        setMessage(res.data.message);
       }
     } catch (error) {
-      console.error(error);
-      setMessage('Error al registrarse');
+      setMessage("Error al registrar. Intenta nuevamente.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <form onSubmit={handleRegister} className="bg-gray-800 p-6 rounded shadow-md w-full max-w-sm space-y-4">
-        <h2 className="text-2xl font-bold mb-4 text-center">Registro</h2>
-
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white px-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm p-6 bg-gray-900 rounded-xl shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center">Crear cuenta en IMPERIUM CASINO</h2>
         <input
           type="text"
+          name="name"
           placeholder="Nombre"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border border-gray-600 p-2 rounded w-full bg-white text-black"
+          value={formData.name}
+          onChange={handleChange}
+          className="w-full p-3 mb-4 bg-gray-800 text-white rounded-lg outline-none"
           required
         />
-
         <input
           type="email"
+          name="email"
           placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="border border-gray-600 p-2 rounded w-full bg-white text-black"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-3 mb-4 bg-gray-800 text-white rounded-lg outline-none"
           required
         />
-
         <input
           type="password"
+          name="password"
           placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border border-gray-600 p-2 rounded w-full bg-white text-black"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full p-3 mb-4 bg-gray-800 text-white rounded-lg outline-none"
           required
         />
-
-        <button
-          type="submit"
-          className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded w-full"
-        >
+        <button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded">
           Registrarse
         </button>
-
-        {message && <p className="text-red-500 text-sm text-center">{message}</p>}
+        {message && <p className="mt-4 text-center text-red-400">{message}</p>}
       </form>
     </div>
   );
