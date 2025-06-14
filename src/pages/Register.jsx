@@ -1,72 +1,86 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
 
-  const handleRegister = async (e) => {
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError('');
     try {
-      const response = await axios.post("https://imperium-backend-bpkr.onrender.com/api/auth/register", {
-        email,
-        password,
-      });
-
-      if (response.data.token) {
-        setMessage("Registro exitoso. Ahora puedes iniciar sesión.");
-        setTimeout(() => {
-          navigate("/login");
-        }, 1500);
+      const res = await axios.post('https://imperium-backend-bpkr.onrender.com/api/auth/register', formData);
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+        navigate('/dashboard');
       }
-    } catch (error) {
-      if (error.response?.data?.message) {
-        setMessage(error.response.data.message);
-      } else {
-        setMessage("Error al registrar.");
-      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error al registrarse');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black text-white">
-      <form
-        onSubmit={handleRegister}
-        className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-sm"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">Registro</h2>
-
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full p-2 mb-4 rounded bg-gray-700 border border-gray-600 text-white"
-        />
-
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full p-2 mb-4 rounded bg-gray-700 border border-gray-600 text-white"
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded transition"
-        >
-          Registrarse
-        </button>
-
-        {message && <p className="mt-4 text-sm text-center">{message}</p>}
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-800 to-gray-900">
+      <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-6 text-center text-purple-700">Registro</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="username"
+            placeholder="Nombre de usuario"
+            value={formData.username}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Contraseña"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button
+            type="submit"
+            className="w-full bg-purple-700 text-white py-2 rounded-lg hover:bg-purple-800 transition duration-300"
+          >
+            Registrarse
+          </button>
+        </form>
+        <p className="mt-4 text-center text-sm">
+          ¿Ya tienes una cuenta?{' '}
+          <a href="/login" className="text-purple-600 hover:underline">
+            Inicia sesión
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
