@@ -1,65 +1,75 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
-  const [message, setMessage] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "https://imperium-backend.onrender.com/api/auth/register",
-        form
-      );
-      setMessage("✅ Registrado exitosamente");
-    } catch (err) {
-      setMessage(err.response?.data?.message || "❌ Error al registrar");
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+        name,
+        email,
+        password,
+      });
+
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        navigate('/dashboard');
+      } else {
+        setMessage('Registro fallido');
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage('Error al registrarse');
     }
   };
 
   return (
-    <div className="p-4 max-w-sm mx-auto">
-      <h2 className="text-xl font-bold mb-4">Registro</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <form onSubmit={handleRegister} className="bg-gray-800 p-6 rounded shadow-md w-full max-w-sm space-y-4">
+        <h2 className="text-2xl font-bold mb-4 text-center">Registro</h2>
+
         <input
           type="text"
-          name="username"
-          placeholder="Nombre de usuario"
-          value={form.username}
-          onChange={handleChange}
-          className="w-full p-2 border"
+          placeholder="Nombre"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="border border-gray-600 p-2 rounded w-full bg-white text-black"
           required
         />
+
         <input
           type="email"
-          name="email"
-          placeholder="Correo"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full p-2 border"
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="border border-gray-600 p-2 rounded w-full bg-white text-black"
           required
         />
+
         <input
           type="password"
-          name="password"
           placeholder="Contraseña"
-          value={form.password}
-          onChange={handleChange}
-          className="w-full p-2 border"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="border border-gray-600 p-2 rounded w-full bg-white text-black"
           required
         />
+
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded"
+          className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded w-full"
         >
           Registrarse
         </button>
-        {message && <p className="mt-2 text-center">{message}</p>}
+
+        {message && <p className="text-red-500 text-sm text-center">{message}</p>}
       </form>
     </div>
   );
