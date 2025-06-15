@@ -1,46 +1,57 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const Dashboard = () => {
-  const [balance, setBalance] = useState(null);
-  const [username, setUsername] = useState('');
-  const navigate = useNavigate();
-
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return navigate('/login');
-
-      const res = await fetch('https://imperium-backend-bpkr.onrender.com/api/user/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        localStorage.removeItem('token');
-        return navigate('/login');
-      }
-
-      const data = await res.json();
-      setUsername(data.username);
-      setBalance(data.balance);
-    } catch (err) {
-      console.error('Error al obtener perfil:', err);
-      navigate('/login');
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
+  const [usuario, setUsuario] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchUserData();
+    const fetchUsuario = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setError("No hay sesión activa. Inicia sesión.");
+          return;
+        }
+
+        const res = await axios.get("https://imperium-backend-bpkr.onrender.com/api/user/perfil", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUsuario(res.data);
+      } catch (err) {
+        setError("Error al cargar los datos del usuario");
+      }
+    };
+
+    fetchUsuario();
   }, []);
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-red-500">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  if (!usuario) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <p>Cargando perfil...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white px-4">
-      <h1 className="text-3xl font-bold mb-4">Bienvenido, {username}</h1>
-      <p className="text-xl mb-6">Tu saldo: <span className="font-semibold">${balance}</
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+      <h1 className="text-3xl font-bold mb-4">Bienvenido, {usuario.nombre}</h1>
+      <p className="text-xl">Saldo actual: ${usuario.saldo.toFixed(2)}</p>
+      {/* Aquí puedes agregar botones de Recargar, Retirar, Apostar, etc */}
+    </div>
+  );
+};
+
+export default Dashboard;
