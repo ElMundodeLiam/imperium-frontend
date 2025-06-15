@@ -1,61 +1,78 @@
-// src/pages/Login.jsx
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "https://imperium-backend-bpkr.onrender.com/api/auth/login",
-        formData
-      );
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        navigate("/dashboard");
+      const res = await fetch('https://imperium-backend-bpkr.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.user._id);
+        navigate('/dashboard'); // redirige al panel del usuario
       } else {
-        setMessage(res.data.message || "Credenciales inválidas");
+        setError(data.message || 'Error al iniciar sesión');
       }
-    } catch (error) {
-      setMessage("Error al iniciar sesión");
+    } catch (err) {
+      console.error(err);
+      setError('Error al conectar con el servidor');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white px-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm p-6 bg-gray-900 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar sesión en IMPERIUM CASINO</h2>
-        <input
-          type="email"
-          name="email"
-          placeholder="Correo electrónico"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-800 text-white rounded-lg outline-none"
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-800 text-white rounded-lg outline-none"
-          required
-        />
-        <button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded">
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <form
+        onSubmit={handleLogin}
+        className="bg-zinc-900 p-8 rounded-lg shadow-lg w-full max-w-md"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+
+        <div className="mb-4">
+          <label className="block mb-1">Correo electrónico</label>
+          <input
+            type="email"
+            className="w-full px-4 py-2 rounded bg-zinc-800 text-white border border-zinc-700"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label className="block mb-1">Contraseña</label>
+          <input
+            type="password"
+            className="w-full px-4 py-2 rounded bg-zinc-800 text-white border border-zinc-700"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-purple-600 hover:bg-purple-700 transition-all py-2 rounded font-semibold"
+        >
           Iniciar sesión
         </button>
-        {message && <p className="mt-4 text-center text-red-400">{message}</p>}
       </form>
     </div>
   );
