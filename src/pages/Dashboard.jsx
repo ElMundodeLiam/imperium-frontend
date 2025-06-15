@@ -1,55 +1,37 @@
+// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [usuario, setUsuario] = useState(null);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchUsuario = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("No hay sesión activa. Inicia sesión.");
-          return;
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/login");
+
+    fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
+      headers: {
+        "x-auth-token": token,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.nombre) {
+          setUsuario(data);
+        } else {
+          navigate("/login");
         }
-
-        const res = await axios.get("https://imperium-backend-bpkr.onrender.com/api/user/perfil", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setUsuario(res.data);
-      } catch (err) {
-        setError("Error al cargar los datos del usuario");
-      }
-    };
-
-    fetchUsuario();
+      })
+      .catch(() => navigate("/login"));
   }, []);
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-red-500">
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (!usuario) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <p>Cargando perfil...</p>
-      </div>
-    );
-  }
+  if (!usuario) return <div className="text-white">Cargando...</div>;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
-      <h1 className="text-3xl font-bold mb-4">Bienvenido, {usuario.nombre}</h1>
-      <p className="text-xl">Saldo actual: ${usuario.saldo.toFixed(2)}</p>
-      {/* Aquí puedes agregar botones de Recargar, Retirar, Apostar, etc */}
+    <div className="text-white text-center p-6">
+      <h1 className="text-3xl font-bold mb-4">¡Bienvenido {usuario.nombre}!</h1>
+      <p className="text-xl">Tu saldo es: <strong>${usuario.saldo}</strong></p>
     </div>
   );
 };
