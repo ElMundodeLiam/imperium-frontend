@@ -38,4 +38,21 @@ function Dashboard() {
         <h1 className="text-3xl font-bold mb-4">🎰 Imperium Casino 🎰</h1>
         {usuario ? (
           <>
-            <p className="text-xl mb-
+            <p className="text-xl mb-2">Bienvenido, <strong>{usuario.nombre}</strong></p>
+            <p className="text-lg mb-6">Saldo: ${usuario.saldo}</p>
+            <button
+              onClick={cerrarSesion}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded-full transition duration-300"
+            >
+              Cerrar sesión
+            </button>
+          </>
+        ) : (
+          <p className="text-white">Cargando...</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Dashboard;
