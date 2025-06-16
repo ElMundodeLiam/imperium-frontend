@@ -4,13 +4,14 @@ import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const [usuario, setUsuario] = useState(null);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      navigate("/login");
+      navigate("/");
       return;
     }
 
@@ -20,35 +21,41 @@ function Dashboard() {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => setUsuario(res.data))
+      .then((res) => {
+        setUsuario(res.data);
+      })
       .catch((err) => {
-        console.error(err);
-        navigate("/login");
+        console.error("Error al obtener datos:", err);
+        setError("Error al obtener datos del usuario");
+        navigate("/");
       });
   }, [navigate]);
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 text-white flex flex-col items-center justify-center px-4">
       <div className="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
         <h1 className="text-3xl font-bold mb-4">🎰 Imperium Casino 🎰</h1>
+
+        {error && <p className="text-red-400">{error}</p>}
+
         {usuario ? (
           <>
-            <p className="text-xl mb-2">Bienvenido, <strong>{usuario.nombre}</strong></p>
-            <p className="text-lg mb-6">Saldo: ${usuario.saldo}</p>
+            <p className="text-xl mb-2">Hola, {usuario.nombre} 👋</p>
+            <p className="text-lg mb-4">Saldo actual: ${usuario.saldo}</p>
             <button
               onClick={cerrarSesion}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded-full transition duration-300"
+              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
             >
               Cerrar sesión
             </button>
           </>
         ) : (
-          <p className="text-white">Cargando...</p>
+          <p>Cargando datos...</p>
         )}
       </div>
     </div>
