@@ -1,3 +1,4 @@
+// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -34,6 +35,7 @@ export default function Dashboard() {
       } catch (error) {
         console.error("Error al obtener datos:", error);
         setCargando(false);
+        navigate("/");
       }
     };
 
@@ -72,15 +74,14 @@ export default function Dashboard() {
       <div className="flex-1 p-6">
         {cargando ? (
           <h2 className="text-xl">Cargando datos del usuario...</h2>
-        ) : usuario ? (
+        ) : (
           <div>
             <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.nombre} 👋</h2>
             <p className="text-xl">
-              💰 Saldo actual: <span className="text-yellow-400">${usuario.saldo?.toFixed(2) ?? "0.00"}</span>
+              💰 Saldo actual:{" "}
+              <span className="text-yellow-400">${usuario.saldo.toFixed(2)}</span>
             </p>
           </div>
-        ) : (
-          <h2 className="text-xl text-red-500">No se pudo cargar el usuario.</h2>
         )}
       </div>
     </div>
