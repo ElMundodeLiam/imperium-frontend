@@ -29,8 +29,7 @@ export default function Login() {
       // Guardar token y redirigir
       localStorage.setItem("token", datos.token);
       console.log("✅ Token guardado:", datos.token); // <- Aparece en consola
-      alert("Token guardado: " + datos.token); // <- Para probar desde celular
-
+      
       navigate("/dashboard");
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
