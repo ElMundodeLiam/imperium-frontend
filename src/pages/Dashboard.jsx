@@ -1,4 +1,3 @@
-// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -35,7 +34,6 @@ export default function Dashboard() {
       } catch (error) {
         console.error("Error al obtener datos:", error);
         setCargando(false);
-        navigate("/");
       }
     };
 
@@ -65,7 +63,10 @@ export default function Dashboard() {
             </li>
           </ul>
         </div>
-        <button onClick={cerrarSesion} className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+        <button
+          onClick={cerrarSesion}
+          className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
           Cerrar sesión
         </button>
       </div>
@@ -76,10 +77,14 @@ export default function Dashboard() {
           <h2 className="text-xl">Cargando datos del usuario...</h2>
         ) : (
           <div>
-            <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.nombre} 👋</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              Bienvenido, {usuario.nombre} 👋
+            </h2>
             <p className="text-xl">
               💰 Saldo actual:{" "}
-              <span className="text-yellow-400">${usuario.saldo.toFixed(2)}</span>
+              <span className="text-yellow-400">
+                ${usuario.saldo.toFixed(2)}
+              </span>
             </p>
           </div>
         )}
