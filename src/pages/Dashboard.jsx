@@ -34,7 +34,14 @@ export default function Dashboard() {
   if (!usuario) {
     return (
       <div className="text-white text-center mt-10">
-        Cargando datos del usuario...
+        {usuario ? (
+  <div>
+    <h2 className="text-2xl font-bold">Bienvenido, {usuario.nombre}</h2>
+    <p className="text-lg">💰 Saldo: S/ {usuario.saldo.toFixed(2)}</p>
+  </div>
+) : (
+  <p className="text-red-400">Cargando datos del usuario...</p>
+)}
       </div>
     );
   }
