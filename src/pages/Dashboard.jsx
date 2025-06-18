@@ -7,31 +7,34 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/");
-      return;
-    }
-
     const obtenerDatos = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/");
+        return;
+      }
+
       try {
-        const res = await fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
-          headers: { Authorization: `Bearer ${token}` },
+        const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
-        if (!res.ok) {
+        if (!respuesta.ok) {
           localStorage.removeItem("token");
           navigate("/");
           return;
         }
 
-        const data = await res.json();
-        setUsuario(data);
-      } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
-        navigate("/");
-      } finally {
+        const datos = await respuesta.json();
+        setUsuario(datos);
         setCargando(false);
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+        localStorage.removeItem("token");
+        navigate("/");
       }
     };
 
@@ -50,14 +53,20 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold mb-6">🎰 Imperium Casino</h1>
           <ul className="space-y-4">
-            <li><button className="hover:text-yellow-400">💰 Recargar</button></li>
-            <li><button className="hover:text-yellow-400">🏧 Retirar</button></li>
-            <li><button className="hover:text-yellow-400">📜 Historial</button></li>
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">💰 Recargar</button>
+            </li>
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">🏧 Retirar</button>
+            </li>
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">📜 Historial</button>
+            </li>
           </ul>
         </div>
         <button
           onClick={cerrarSesion}
-          className="mt-6 bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+          className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
         >
           Cerrar sesión
         </button>
@@ -66,16 +75,15 @@ export default function Dashboard() {
       {/* Contenido principal */}
       <div className="flex-1 p-6">
         {cargando ? (
-          <p className="text-xl">Cargando datos del usuario...</p>
-        ) : usuario ? (
+          <h2 className="text-xl">Cargando datos del usuario...</h2>
+        ) : (
           <div>
             <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.nombre} 👋</h2>
             <p className="text-xl">
-              💰 Saldo actual: <span className="text-yellow-400">${usuario.saldo.toFixed(2)}</span>
+              💰 Saldo actual:{" "}
+              <span className="text-yellow-400">${usuario.saldo.toFixed(2)}</span>
             </p>
           </div>
-        ) : (
-          <p className="text-red-500">No se pudieron cargar los datos del usuario.</p>
         )}
       </div>
     </div>
