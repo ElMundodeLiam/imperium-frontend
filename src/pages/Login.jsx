@@ -1,7 +1,8 @@
+// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+export default function Login() {
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -21,7 +22,7 @@ const Login = () => {
 
       const datos = await respuesta.json();
 
-      if (respuesta.ok) {
+      if (respuesta.ok && datos.token) {
         localStorage.setItem("token", datos.token);
         console.log("Token guardado:", datos.token);
         setMensaje("Inicio de sesión exitoso");
@@ -30,6 +31,7 @@ const Login = () => {
         setMensaje(datos.mensaje || "Error al iniciar sesión");
       }
     } catch (error) {
+      console.error("Error del servidor:", error);
       setMensaje("Error del servidor");
     }
   };
@@ -68,6 +70,4 @@ const Login = () => {
       </form>
     </div>
   );
-};
-
-export default Login;
+}
