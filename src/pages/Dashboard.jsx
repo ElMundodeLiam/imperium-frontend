@@ -1,75 +1,84 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Dashboard = () => {
-  const [datosUsuario, setDatosUsuario] = useState(null);
+export default function Dashboard() {
+  const [usuario, setUsuario] = useState(null);
+  const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
 
-  const obtenerDatos = async () => {
-    try {
+  useEffect(() => {
+    const obtenerDatos = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return navigate("/");
 
-      const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const datos = await respuesta.json();
-
-      if (!respuesta.ok) {
-        throw new Error(datos.mensaje || "Error al obtener datos");
+      if (!token) {
+        navigate("/");
+        return;
       }
 
-      setDatosUsuario(datos);
-    } catch (error) {
-      console.error(error);
-      navigate("/");
-    }
-  };
+      try {
+        const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!respuesta.ok) {
+          localStorage.removeItem("token");
+          navigate("/");
+          return;
+        }
+
+        const datos = await respuesta.json();
+        setUsuario(datos);
+        setCargando(false);
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+        setCargando(false);
+      }
+    };
+
+    obtenerDatos();
+  }, [navigate]);
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
 
-  useEffect(() => {
-    obtenerDatos();
-  }, []);
-
   return (
-    <div className="flex min-h-screen bg-gray-900 text-white">
+    <div className="flex min-h-screen bg-black text-white">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800 p-4 space-y-4">
-        <h2 className="text-2xl font-bold mb-6">🎰 Imperium Casino</h2>
-        <button onClick={() => alert("Función Recargar")} className="block w-full text-left px-4 py-2 bg-gray-700 rounded hover:bg-yellow-500">
-          Recargar
-        </button>
-        <button onClick={() => alert("Función Retirar")} className="block w-full text-left px-4 py-2 bg-gray-700 rounded hover:bg-yellow-500">
-          Retirar
-        </button>
-        <button onClick={() => alert("Función Historial")} className="block w-full text-left px-4 py-2 bg-gray-700 rounded hover:bg-yellow-500">
-          Historial
-        </button>
-        <button onClick={cerrarSesion} className="block w-full text-left px-4 py-2 bg-red-600 rounded hover:bg-red-700">
+      <div className="w-64 bg-gray-900 p-6 flex flex-col justify-between">
+        <div>
+          <h1 className="text-2xl font-bold mb-6">🎰 Imperium Casino</h1>
+          <ul className="space-y-4">
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">💰 Recargar</button>
+            </li>
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">🏧 Retirar</button>
+            </li>
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">📜 Historial</button>
+            </li>
+          </ul>
+        </div>
+        <button onClick={cerrarSesion} className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
           Cerrar sesión
         </button>
       </div>
 
       {/* Contenido principal */}
-      <div className="flex-1 p-8">
-        {datosUsuario ? (
-          <div>
-            <h1 className="text-3xl font-bold mb-4">Bienvenido, {datosUsuario.nombre}</h1>
-            <p className="text-xl">💰 Saldo: S/ {datosUsuario.saldo}</p>
-          </div>
+      <div className="flex-1 p-6">
+        {cargando ? (
+          <h2 className="text-xl">Cargando datos del usuario...</h2>
         ) : (
-          <p className="text-xl">Cargando datos del usuario...</p>
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.nombre} 👋</h2>
+            <p className="text-xl">💰 Saldo actual: <span className="text-yellow-400">${usuario.saldo.toFixed(2)}</span></p>
+          </div>
         )}
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}
