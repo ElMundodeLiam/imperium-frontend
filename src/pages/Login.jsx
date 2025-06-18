@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -24,12 +23,14 @@ const Login = () => {
 
       if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
+        console.log("✅ Token guardado:", datos.token); // Debug
         setMensaje("Inicio de sesión exitoso");
         navigate("/dashboard");
       } else {
         setMensaje(datos.mensaje || "Error al iniciar sesión");
       }
     } catch (error) {
+      console.error("❌ Error en login:", error);
       setMensaje("Error del servidor");
     }
   };
