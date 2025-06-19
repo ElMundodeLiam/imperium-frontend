@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 const Register = () => {
@@ -75,6 +76,13 @@ const Register = () => {
         {mensaje && (
           <p className="mt-4 text-center text-sm text-green-400">{mensaje}</p>
         )}
+
+        <p className="mt-4 text-center text-sm">
+          ¿Ya tienes cuenta?{" "}
+          <Link to="/login" className="text-blue-400 hover:underline">
+            Inicia sesión
+          </Link>
+        </p>
       </form>
     </div>
   );
