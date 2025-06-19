@@ -9,41 +9,43 @@ import Ruleta from "./pages/Ruleta";
 import JuegosFuturos from "./pages/JuegosFuturos";
 
 function App() {
-  const [autenticado, setAutenticado] = useState(false);
-  const [cargando, setCargando] = useState(true);
+  const [autenticado, setAutenticado] = useState(null); // null = en espera
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const verificarToken = async () => {
+      const token = localStorage.getItem("token");
 
-    if (token) {
-      // Verificamos el token con el backend
-      fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => {
-          if (res.ok) {
-            setAutenticado(true);
-          } else {
-            localStorage.removeItem("token");
-            setAutenticado(false);
-          }
-        })
-        .catch(() => {
+      if (!token) {
+        setAutenticado(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          setAutenticado(true);
+        } else {
+          localStorage.removeItem("token");
           setAutenticado(false);
-        })
-        .finally(() => setCargando(false));
-    } else {
-      setAutenticado(false);
-      setCargando(false);
-    }
+        }
+      } catch (err) {
+        localStorage.removeItem("token");
+        setAutenticado(false);
+      }
+    };
+
+    verificarToken();
   }, []);
 
-  if (cargando) {
+  if (autenticado === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white text-xl">
-        Cargando...
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p>Cargando...</p>
       </div>
     );
   }
