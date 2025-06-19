@@ -9,12 +9,14 @@ import Ruleta from "./pages/Ruleta";
 import JuegosFuturos from "./pages/JuegosFuturos";
 
 function App() {
-  const [autenticado, setAutenticado] = useState(null);
+  const [autenticado, setAutenticado] = useState(false);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (token) {
-      // Validar token con backend
+      // Verificamos el token con el backend
       fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -30,16 +32,18 @@ function App() {
         })
         .catch(() => {
           setAutenticado(false);
-        });
+        })
+        .finally(() => setCargando(false));
     } else {
       setAutenticado(false);
+      setCargando(false);
     }
   }, []);
 
-  if (autenticado === null) {
+  if (cargando) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p>Cargando...</p>
+      <div className="min-h-screen flex items-center justify-center bg-black text-white text-xl">
+        Cargando...
       </div>
     );
   }
@@ -47,34 +51,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={autenticado ? <Navigate to="/dashboard" /> : <Register />}
-        />
-        <Route
-          path="/login"
-          element={autenticado ? <Navigate to="/dashboard" /> : <Login />}
-        />
-        <Route
-          path="/dashboard"
-          element={autenticado ? <Dashboard /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/tragamonedas"
-          element={autenticado ? <Tragamonedas /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/apuestas-futbol"
-          element={autenticado ? <ApuestasFutbol /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/ruleta"
-          element={autenticado ? <Ruleta /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/juegos-futuros"
-          element={autenticado ? <JuegosFuturos /> : <Navigate to="/" />}
-        />
+        <Route path="/" element={autenticado ? <Navigate to="/dashboard" /> : <Register />} />
+        <Route path="/login" element={autenticado ? <Navigate to="/dashboard" /> : <Login />} />
+        <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Navigate to="/" />} />
+        <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/" />} />
+        <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Navigate to="/" />} />
+        <Route path="/ruleta" element={autenticado ? <Ruleta /> : <Navigate to="/" />} />
+        <Route path="/juegos-futuros" element={autenticado ? <JuegosFuturos /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );
