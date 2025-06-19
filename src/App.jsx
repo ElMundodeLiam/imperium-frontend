@@ -4,7 +4,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Tragamonedas from "./pages/Tragamonedas"; // ⬅️ Ruta agregada aquí
-
+import ApuestasFutbol from "./pages/ApuestasFutbol";
+// ...
 function App() {
   const [autenticado, setAutenticado] = useState(false);
 
@@ -20,9 +21,8 @@ function App() {
         <Route path="/login" element={autenticado ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Navigate to="/" />} />
         <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/" />} /> {/* ⬅️ Ruta nueva */}
-        import Tragamonedas from "./pages/Tragamonedas";
-// ...
-<Route path="/tragamonedas" element={<Tragamonedas />} />
+        <Route path="/tragamonedas" element={<Tragamonedas />} />
+        <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );
