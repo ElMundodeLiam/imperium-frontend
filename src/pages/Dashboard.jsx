@@ -23,12 +23,20 @@ export default function Dashboard() {
         });
 
         if (!respuesta.ok) {
+          console.error("Respuesta del backend no OK");
           localStorage.removeItem("token");
           navigate("/");
           return;
         }
 
         const datos = await respuesta.json();
+
+        if (!datos.nombre || typeof datos.saldo !== "number") {
+          console.error("Datos incompletos del backend:", datos);
+          setCargando(false);
+          return;
+        }
+
         setUsuario(datos);
         setCargando(false);
       } catch (error) {
@@ -75,7 +83,7 @@ export default function Dashboard() {
       <div className="flex-1 p-6">
         {cargando ? (
           <h2 className="text-xl">Cargando datos del usuario...</h2>
-        ) : (
+        ) : usuario ? (
           <div>
             <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.nombre} 👋</h2>
             <p className="text-xl">
@@ -83,6 +91,8 @@ export default function Dashboard() {
               <span className="text-yellow-400">${usuario.saldo.toFixed(2)}</span>
             </p>
           </div>
+        ) : (
+          <p className="text-red-500">No se pudieron cargar los datos del usuario.</p>
         )}
       </div>
     </div>
