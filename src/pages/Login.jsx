@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // CAMBIADO de 'correo'
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -16,12 +16,12 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password }) // <-- CAMBIO IMPORTANTE AQUÍ
+        body: JSON.stringify({ email, password }) // CORREGIDO: email
       });
 
       const datos = await respuesta.json();
 
-      if (respuesta.ok) {
+      if (respuesta.ok && datos.token) {
         localStorage.setItem("token", datos.token);
         navigate("/dashboard");
       } else {
@@ -41,7 +41,7 @@ const Login = () => {
           type="email"
           placeholder="Correo"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)} // CAMBIADO de 'correo'
           className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
           required
         />
