@@ -9,31 +9,30 @@ import Ruleta from "./pages/Ruleta";
 import JuegosFuturos from "./pages/JuegosFuturos";
 
 function App() {
-  const [autenticado, setAutenticado] = useState(false);
+  const [autenticado, setAutenticado] = useState(!!localStorage.getItem("token"));
 
   useEffect(() => {
-    const verificarToken = () => {
-      const token = localStorage.getItem("token");
-      setAutenticado(!!token);
+    const manejarCambioToken = () => {
+      setAutenticado(!!localStorage.getItem("token"));
     };
 
-    verificarToken();
+    window.addEventListener("storage", manejarCambioToken);
 
-    // Escuchar cambios manuales del token (por ejemplo, cerrar sesión desde otra pestaña)
-    window.addEventListener("storage", verificarToken);
-    return () => window.removeEventListener("storage", verificarToken);
+    return () => {
+      window.removeEventListener("storage", manejarCambioToken);
+    };
   }, []);
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={!autenticado ? <Register /> : <Navigate to="/dashboard" />} />
-        <Route path="/login" element={!autenticado ? <Login /> : <Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Navigate to="/" />} />
-        <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/" />} />
-        <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Navigate to="/" />} />
-        <Route path="/ruleta" element={autenticado ? <Ruleta /> : <Navigate to="/" />} />
-        <Route path="/juegos-futuros" element={autenticado ? <JuegosFuturos /> : <Navigate to="/" />} />
+        <Route path="/" element={autenticado ? <Navigate to="/dashboard" /> : <Register />} />
+        <Route path="/login" element={autenticado ? <Navigate to="/dashboard" /> : <Login />} />
+        <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Navigate to="/login" />} />
+        <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/login" />} />
+        <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Navigate to="/login" />} />
+        <Route path="/ruleta" element={autenticado ? <Ruleta /> : <Navigate to="/login" />} />
+        <Route path="/juegos-futuros" element={autenticado ? <JuegosFuturos /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
