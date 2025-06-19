@@ -61,6 +61,18 @@ export default function Dashboard() {
             <li>
               <button className="w-full text-left hover:text-yellow-400">📜 Historial</button>
             </li>
+            <li>
+              <button onClick={() => navigate("/tragamonedas")} className="w-full text-left hover:text-yellow-400">🎰 Tragamonedas</button>
+            </li>
+            <li>
+              <button onClick={() => navigate("/apuestas")} className="w-full text-left hover:text-yellow-400">⚽ Apuestas de Fútbol</button>
+            </li>
+            <li>
+              <button onClick={() => navigate("/ruleta")} className="w-full text-left hover:text-yellow-400">🎡 Ruleta</button>
+            </li>
+            <li>
+              <button onClick={() => navigate("/otros-juegos")} className="w-full text-left hover:text-yellow-400">🧩 Otros Juegos</button>
+            </li>
           </ul>
         </div>
         <button onClick={cerrarSesion} className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
