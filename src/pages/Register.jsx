@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,10 +34,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-gray-900 p-6 rounded shadow-md w-80"
-      >
+      <form onSubmit={handleSubmit} className="bg-gray-900 p-6 rounded shadow-md w-80">
         <h2 className="text-2xl font-bold mb-4 text-center">Registro</h2>
 
         <input
@@ -66,22 +64,21 @@ const Register = () => {
           required
         />
 
-        <button
-          type="submit"
-          className="w-full bg-purple-700 hover:bg-purple-800 p-2 rounded font-semibold"
-        >
+        <button type="submit" className="w-full bg-purple-700 hover:bg-purple-800 p-2 rounded font-semibold">
           Registrarse
         </button>
 
-        {mensaje && (
-          <p className="mt-4 text-center text-sm text-green-400">{mensaje}</p>
-        )}
+        {mensaje && <p className="mt-4 text-center text-green-400">{mensaje}</p>}
 
-        <p className="mt-4 text-center text-sm">
+        <p className="mt-4 text-sm text-center text-gray-400">
           ¿Ya tienes cuenta?{" "}
-          <Link to="/login" className="text-blue-400 hover:underline">
-            Inicia sesión
-          </Link>
+          <button
+            onClick={() => navigate("/login")}
+            className="text-yellow-400 hover:underline"
+            type="button"
+          >
+            Iniciar sesión
+          </button>
         </p>
       </form>
     </div>
