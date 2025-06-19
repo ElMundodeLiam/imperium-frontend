@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Tragamonedas from "./pages/Tragamonedas"; // ⬅️ Ruta agregada aquí
 
 function App() {
   const [autenticado, setAutenticado] = useState(false);
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={autenticado ? <Navigate to="/dashboard" /> : <Register />} />
         <Route path="/login" element={autenticado ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Navigate to="/" />} />
+        <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/" />} /> {/* ⬅️ Ruta nueva */}
       </Routes>
     </Router>
   );
