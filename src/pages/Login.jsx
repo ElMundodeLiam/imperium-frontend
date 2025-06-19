@@ -21,15 +21,13 @@ const Login = () => {
 
       const datos = await respuesta.json();
 
-      if (respuesta.ok && datos.token) {
+      if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
-        setMensaje("Inicio de sesión exitoso");
         navigate("/dashboard");
       } else {
-        setMensaje(datos.mensaje || "Credenciales incorrectas");
+        setMensaje(datos.mensaje || "Error al iniciar sesión");
       }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
       setMensaje("Error del servidor");
     }
   };
