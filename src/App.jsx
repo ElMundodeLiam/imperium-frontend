@@ -20,6 +20,9 @@ function App() {
         <Route path="/login" element={autenticado ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Navigate to="/" />} />
         <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/" />} /> {/* ⬅️ Ruta nueva */}
+        import Tragamonedas from "./pages/Tragamonedas";
+// ...
+<Route path="/tragamonedas" element={<Tragamonedas />} />
       </Routes>
     </Router>
   );
