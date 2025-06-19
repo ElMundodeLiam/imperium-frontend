@@ -1,4 +1,3 @@
-// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,10 +9,8 @@ export default function Dashboard() {
   useEffect(() => {
     const obtenerDatos = async () => {
       const token = localStorage.getItem("token");
-      console.log("TOKEN ENVIADO AL BACKEND:", token);
 
       if (!token) {
-        console.warn("No hay token. Redirigiendo...");
         navigate("/");
         return;
       }
@@ -26,16 +23,16 @@ export default function Dashboard() {
         });
 
         if (!respuesta.ok) {
-  console.error("Error de respuesta del backend:", respuesta.status);
-  setCargando(false);
-  return;
+          localStorage.removeItem("token");
+          navigate("/");
+          return;
         }
 
         const datos = await respuesta.json();
         setUsuario(datos);
+        setCargando(false);
       } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
-      } finally {
+        console.error("Error al obtener datos:", error);
         setCargando(false);
       }
     };
@@ -55,9 +52,15 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold mb-6">🎰 Imperium Casino</h1>
           <ul className="space-y-4">
-            <li><button className="w-full text-left hover:text-yellow-400">💰 Recargar</button></li>
-            <li><button className="w-full text-left hover:text-yellow-400">🏧 Retirar</button></li>
-            <li><button className="w-full text-left hover:text-yellow-400">📜 Historial</button></li>
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">💰 Recargar</button>
+            </li>
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">🏧 Retirar</button>
+            </li>
+            <li>
+              <button className="w-full text-left hover:text-yellow-400">📜 Historial</button>
+            </li>
           </ul>
         </div>
         <button
@@ -72,13 +75,14 @@ export default function Dashboard() {
       <div className="flex-1 p-6">
         {cargando ? (
           <h2 className="text-xl">Cargando datos del usuario...</h2>
-        ) : usuario ? (
+        ) : (
           <div>
             <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.nombre} 👋</h2>
-            <p className="text-xl">💰 Saldo actual: <span className="text-yellow-400">${usuario.saldo.toFixed(2)}</span></p>
+            <p className="text-xl">
+              💰 Saldo actual:{" "}
+              <span className="text-yellow-400">${usuario.saldo.toFixed(2)}</span>
+            </p>
           </div>
-        ) : (
-          <h2 className="text-xl text-red-500">No se pudieron cargar los datos del usuario.</h2>
         )}
       </div>
     </div>
