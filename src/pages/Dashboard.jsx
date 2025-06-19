@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../App";
 
 export default function Dashboard() {
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
+  const { setAutenticado } = useContext(AuthContext); // ✅
 
   useEffect(() => {
     const obtenerDatos = async () => {
@@ -24,6 +26,7 @@ export default function Dashboard() {
 
         if (!respuesta.ok) {
           localStorage.removeItem("token");
+          setAutenticado(false); // ✅
           navigate("/");
           return;
         }
@@ -38,10 +41,11 @@ export default function Dashboard() {
     };
 
     obtenerDatos();
-  }, [navigate]);
+  }, [navigate, setAutenticado]);
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
+    setAutenticado(false); // ✅ esto actualiza el estado global
     navigate("/");
   };
 
@@ -65,13 +69,13 @@ export default function Dashboard() {
               <button onClick={() => navigate("/tragamonedas")} className="w-full text-left hover:text-yellow-400">🎰 Tragamonedas</button>
             </li>
             <li>
-              <button onClick={() => navigate("/apuestas")} className="w-full text-left hover:text-yellow-400">⚽ Apuestas de Fútbol</button>
+              <button onClick={() => navigate("/apuestas-futbol")} className="w-full text-left hover:text-yellow-400">⚽ Apuestas de Fútbol</button>
             </li>
             <li>
               <button onClick={() => navigate("/ruleta")} className="w-full text-left hover:text-yellow-400">🎡 Ruleta</button>
             </li>
             <li>
-              <button onClick={() => navigate("/otros-juegos")} className="w-full text-left hover:text-yellow-400">🧩 Otros Juegos</button>
+              <button onClick={() => navigate("/juegos-futuros")} className="w-full text-left hover:text-yellow-400">🧩 Juegos Futuros</button>
             </li>
           </ul>
         </div>
