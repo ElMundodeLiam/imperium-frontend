@@ -16,7 +16,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ correo, password })
+        body: JSON.stringify({ email: correo, password }) // ✅ corregido aquí
       });
 
       const datos = await respuesta.json();
@@ -25,7 +25,7 @@ const Login = () => {
         localStorage.setItem("token", datos.token);
         navigate("/dashboard");
       } else {
-        setMensaje(datos.mensaje || "Error al iniciar sesión");
+        setMensaje(datos.mensaje || "Credenciales inválidas");
       }
     } catch (error) {
       setMensaje("Error del servidor");
