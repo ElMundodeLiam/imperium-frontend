@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+// src/pages/Login.jsx
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 const Login = () => {
-  const [email, setEmail] = useState(""); // CAMBIADO de 'correo'
+  const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
+  const { setAutenticado } = useContext(AuthContext);
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
@@ -16,13 +19,14 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password }) // CORREGIDO: email
+        body: JSON.stringify({ correo, password })
       });
 
       const datos = await respuesta.json();
 
-      if (respuesta.ok && datos.token) {
+      if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
+        setAutenticado(true); // ✅ Esto es lo que faltaba
         navigate("/dashboard");
       } else {
         setMensaje(datos.mensaje || "Error al iniciar sesión");
@@ -40,8 +44,8 @@ const Login = () => {
         <input
           type="email"
           placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)} // CAMBIADO de 'correo'
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
           className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
           required
         />
