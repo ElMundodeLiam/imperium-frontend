@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
-  const { setAutenticado } = useContext(AuthContext); // ✅
 
   useEffect(() => {
     const obtenerDatos = async () => {
@@ -25,7 +24,6 @@ export default function Dashboard() {
 
         if (!respuesta.ok) {
           localStorage.removeItem("token");
-          setAutenticado(false); // ✅
           navigate("/");
           return;
         }
@@ -40,11 +38,10 @@ export default function Dashboard() {
     };
 
     obtenerDatos();
-  }, [navigate, setAutenticado]);
+  }, [navigate]);
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
-    setAutenticado(false); // ✅ esto actualiza el estado global
     navigate("/");
   };
 
