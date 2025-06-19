@@ -1,5 +1,8 @@
+// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
+import { AuthProvider, AuthContext } from "./AuthContext";
+
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -7,9 +10,8 @@ import Tragamonedas from "./pages/Tragamonedas";
 import ApuestasFutbol from "./pages/ApuestasFutbol";
 import Ruleta from "./pages/Ruleta";
 import JuegosFuturos from "./pages/JuegosFuturos";
-import { AuthProvider, AuthContext } from "./AuthContext";
 
-function AppRoutes() {
+function RutasProtegidas() {
   const { autenticado } = useContext(AuthContext);
 
   return (
@@ -29,7 +31,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <AppRoutes />
+        <RutasProtegidas />
       </Router>
     </AuthProvider>
   );
