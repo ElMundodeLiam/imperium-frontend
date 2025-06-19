@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Tragamonedas from "./pages/Tragamonedas";
 import ApuestasFutbol from "./pages/ApuestasFutbol";
 import Ruleta from "./pages/Ruleta"; // ⬅️ Agrega esto arriba con los demás imports
+import JuegosFuturos from "./pages/JuegosFuturos";
 function App() {
   const [autenticado, setAutenticado] = useState(false);
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/" />} />
         <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Navigate to="/" />} />
         <Route path="/ruleta" element={autenticado ? <Ruleta /> : <Navigate to="/" />} />
+        <Route path="/juegos-futuros" element={autenticado ? <JuegosFuturos /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );
