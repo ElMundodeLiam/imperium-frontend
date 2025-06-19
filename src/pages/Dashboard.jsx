@@ -1,19 +1,17 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
 
 export default function Dashboard() {
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
-  const { cerrarSesion } = useContext(AuthContext);
 
   useEffect(() => {
     const obtenerDatos = async () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        cerrarSesion();
+        navigate("/");
         return;
       }
 
@@ -25,7 +23,8 @@ export default function Dashboard() {
         });
 
         if (!respuesta.ok) {
-          cerrarSesion();
+          localStorage.removeItem("token");
+          navigate("/");
           return;
         }
 
@@ -34,12 +33,18 @@ export default function Dashboard() {
         setCargando(false);
       } catch (error) {
         console.error("Error al obtener datos:", error);
-        cerrarSesion();
+        localStorage.removeItem("token");
+        navigate("/");
       }
     };
 
     obtenerDatos();
-  }, [cerrarSesion]);
+  }, [navigate]);
+
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
   return (
     <div className="flex min-h-screen bg-black text-white">
@@ -79,7 +84,7 @@ export default function Dashboard() {
       {/* Contenido principal */}
       <div className="flex-1 p-6">
         {cargando ? (
-          <h2 className="text-xl">Cargando datos del usuario...</h2>
+          <h2 className="text-xl text-center">Cargando datos del usuario...</h2>
         ) : (
           <div>
             <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.name} 👋</h2>
