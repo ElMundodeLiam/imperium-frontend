@@ -7,15 +7,14 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    // Si no hay token, redirigir al login
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
     const obtenerDatos = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/");
+        return;
+      }
+
       try {
         const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
           headers: {
@@ -25,17 +24,15 @@ export default function Dashboard() {
 
         if (!respuesta.ok) {
           localStorage.removeItem("token");
-          navigate("/login");
+          navigate("/");
           return;
         }
 
         const datos = await respuesta.json();
         setUsuario(datos);
+        setCargando(false);
       } catch (error) {
         console.error("Error al obtener datos:", error);
-        localStorage.removeItem("token");
-        navigate("/login");
-      } finally {
         setCargando(false);
       }
     };
@@ -45,16 +42,8 @@ export default function Dashboard() {
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
-    navigate("/login"); // Redirigir directamente al login
+    navigate("/");
   };
-
-  if (cargando) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <h2 className="text-xl">Cargando datos del usuario...</h2>
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen bg-black text-white">
@@ -73,16 +62,24 @@ export default function Dashboard() {
               <button className="w-full text-left hover:text-yellow-400">📜 Historial</button>
             </li>
             <li>
-              <button onClick={() => navigate("/tragamonedas")} className="w-full text-left hover:text-yellow-400">🎰 Tragamonedas</button>
+              <button onClick={() => navigate("/tragamonedas")} className="w-full text-left hover:text-yellow-400">
+                🎰 Tragamonedas
+              </button>
             </li>
             <li>
-              <button onClick={() => navigate("/apuestas-futbol")} className="w-full text-left hover:text-yellow-400">⚽ Apuestas de Fútbol</button>
+              <button onClick={() => navigate("/apuestas-futbol")} className="w-full text-left hover:text-yellow-400">
+                ⚽ Apuestas de Fútbol
+              </button>
             </li>
             <li>
-              <button onClick={() => navigate("/ruleta")} className="w-full text-left hover:text-yellow-400">🎡 Ruleta</button>
+              <button onClick={() => navigate("/ruleta")} className="w-full text-left hover:text-yellow-400">
+                🎡 Ruleta
+              </button>
             </li>
             <li>
-              <button onClick={() => navigate("/juegos-futuros")} className="w-full text-left hover:text-yellow-400">🧩 Juegos Futuros</button>
+              <button onClick={() => navigate("/juegos-futuros")} className="w-full text-left hover:text-yellow-400">
+                🧩 Juegos Futuros
+              </button>
             </li>
           </ul>
         </div>
@@ -96,11 +93,16 @@ export default function Dashboard() {
 
       {/* Contenido principal */}
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario?.name} 👋</h2>
-        <p className="text-xl">
-          💰 Saldo actual:{" "}
-          <span className="text-yellow-400">${usuario?.balance?.toFixed(2)}</span>
-        </p>
+        {cargando ? (
+          <h2 className="text-xl">Cargando datos del usuario...</h2>
+        ) : (
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.name} 👋</h2>
+            <p className="text-xl">
+              💰 Saldo actual: <span className="text-yellow-400">${usuario.balance.toFixed(2)}</span>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
