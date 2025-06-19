@@ -1,14 +1,11 @@
-// src/pages/Login.jsx
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
 
 const Login = () => {
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
-  const { setAutenticado } = useContext(AuthContext);
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
@@ -26,7 +23,6 @@ const Login = () => {
 
       if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
-        setAutenticado(true); // ✅ Esto es lo que faltaba
         navigate("/dashboard");
       } else {
         setMensaje(datos.mensaje || "Error al iniciar sesión");
