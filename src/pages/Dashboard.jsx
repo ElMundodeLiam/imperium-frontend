@@ -26,10 +26,9 @@ export default function Dashboard() {
         });
 
         if (!respuesta.ok) {
-          console.warn("Token inválido. Redirigiendo...");
-          localStorage.removeItem("token");
-          navigate("/");
-          return;
+  console.error("Error de respuesta del backend:", respuesta.status);
+  setCargando(false);
+  return;
         }
 
         const datos = await respuesta.json();
