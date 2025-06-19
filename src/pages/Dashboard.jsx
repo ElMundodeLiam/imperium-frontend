@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 export default function Dashboard() {
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
+  const { cerrarSesion } = useContext(AuthContext);
 
   useEffect(() => {
     const obtenerDatos = async () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        navigate("/");
+        cerrarSesion();
         return;
       }
 
@@ -23,8 +25,7 @@ export default function Dashboard() {
         });
 
         if (!respuesta.ok) {
-          localStorage.removeItem("token");
-          navigate("/");
+          cerrarSesion();
           return;
         }
 
@@ -33,17 +34,12 @@ export default function Dashboard() {
         setCargando(false);
       } catch (error) {
         console.error("Error al obtener datos:", error);
-        setCargando(false);
+        cerrarSesion();
       }
     };
 
     obtenerDatos();
-  }, [navigate]);
-
-  const cerrarSesion = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
+  }, [cerrarSesion]);
 
   return (
     <div className="flex min-h-screen bg-black text-white">
@@ -62,31 +58,20 @@ export default function Dashboard() {
               <button className="w-full text-left hover:text-yellow-400">📜 Historial</button>
             </li>
             <li>
-              <button onClick={() => navigate("/tragamonedas")} className="w-full text-left hover:text-yellow-400">
-                🎰 Tragamonedas
-              </button>
+              <button onClick={() => navigate("/tragamonedas")} className="w-full text-left hover:text-yellow-400">🎰 Tragamonedas</button>
             </li>
             <li>
-              <button onClick={() => navigate("/apuestas-futbol")} className="w-full text-left hover:text-yellow-400">
-                ⚽ Apuestas de Fútbol
-              </button>
+              <button onClick={() => navigate("/apuestas-futbol")} className="w-full text-left hover:text-yellow-400">⚽ Apuestas de Fútbol</button>
             </li>
             <li>
-              <button onClick={() => navigate("/ruleta")} className="w-full text-left hover:text-yellow-400">
-                🎡 Ruleta
-              </button>
+              <button onClick={() => navigate("/ruleta")} className="w-full text-left hover:text-yellow-400">🎡 Ruleta</button>
             </li>
             <li>
-              <button onClick={() => navigate("/juegos-futuros")} className="w-full text-left hover:text-yellow-400">
-                🧩 Juegos Futuros
-              </button>
+              <button onClick={() => navigate("/juegos-futuros")} className="w-full text-left hover:text-yellow-400">🧩 Juegos Futuros</button>
             </li>
           </ul>
         </div>
-        <button
-          onClick={cerrarSesion}
-          className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-        >
+        <button onClick={cerrarSesion} className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
           Cerrar sesión
         </button>
       </div>
