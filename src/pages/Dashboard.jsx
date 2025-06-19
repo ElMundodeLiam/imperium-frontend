@@ -10,6 +10,7 @@ export default function Dashboard() {
   useEffect(() => {
     const obtenerDatos = async () => {
       const token = localStorage.getItem("token");
+      console.log("TOKEN ENVIADO AL BACKEND:", token);
 
       if (!token) {
         console.warn("No hay token. Redirigiendo...");
