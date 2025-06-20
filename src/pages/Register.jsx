@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
+  const [correo, setCorreo] = useState(""); // Correo correcto
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,15 +15,20 @@ const Register = () => {
     try {
       const res = await axios.post("https://imperium-backend-bpkr.onrender.com/api/auth/register", {
         nombre,
-        email,
+        correo, // 👈 Este campo es importante
         password,
       });
 
       if (res.data) {
         setMensaje("✅ Registro exitoso. Ya puedes iniciar sesión.");
         setNombre("");
-        setEmail("");
+        setCorreo("");
         setPassword("");
+
+        // Redirigir al login luego de unos segundos
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       } else {
         setMensaje("Error al registrarse");
       }
@@ -51,8 +57,8 @@ const Register = () => {
         <input
           type="email"
           placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
           className="w-full p-2 mb-4 rounded text-black"
           required
         />
@@ -77,11 +83,11 @@ const Register = () => {
           <p className="mt-4 text-center text-sm text-green-400">{mensaje}</p>
         )}
 
-        <p className="mt-4 text-center text-sm">
-          ¿Ya tienes cuenta?{" "}
-          <Link to="/login" className="text-yellow-400 hover:underline">
-            Iniciar sesión
-          </Link>
+        <p
+          onClick={() => navigate("/login")}
+          className="mt-4 text-sm text-center text-yellow-400 cursor-pointer hover:underline"
+        >
+          ¿Ya tienes cuenta? Iniciar Sesión
         </p>
       </form>
     </div>
