@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
 
 export default function Dashboard() {
   const [usuario, setUsuario] = useState(null);
@@ -35,7 +34,8 @@ export default function Dashboard() {
         setCargando(false);
       } catch (error) {
         console.error("Error al obtener datos:", error);
-        setCargando(false);
+        localStorage.removeItem("token");
+        navigate("/");
       }
     };
 
@@ -48,20 +48,20 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
-      {/* Botón de menú (sólo visible en pantallas pequeñas) */}
+    <div className="flex min-h-screen bg-black text-white relative">
+      {/* Botón menú móvil */}
       <button
         onClick={() => setMostrarSidebar(!mostrarSidebar)}
-        className="absolute top-4 left-4 z-30 md:hidden"
+        className="md:hidden absolute top-4 left-4 z-30 text-white text-3xl"
       >
-        <Menu size={32} />
+        ☰
       </button>
 
       {/* Sidebar */}
       <div
-        className={`bg-gray-900 p-6 flex flex-col justify-between transition-all duration-300 fixed md:relative z-20 h-full md:w-64 w-64 md:block ${
+        className={`bg-gray-900 p-6 flex flex-col justify-between transition-all duration-300 fixed md:relative z-20 h-full w-64 ${
           mostrarSidebar ? "left-0" : "-left-64"
-        }`}
+        } md:left-0`}
       >
         <div>
           <h1 className="text-2xl font-bold mb-6">🎰 Imperium Casino</h1>
@@ -76,35 +76,45 @@ export default function Dashboard() {
               <button className="w-full text-left hover:text-yellow-400">📜 Historial</button>
             </li>
             <li>
-              <button onClick={() => navigate("/tragamonedas")} className="w-full text-left hover:text-yellow-400">🎰 Tragamonedas</button>
+              <button onClick={() => navigate("/tragamonedas")} className="w-full text-left hover:text-yellow-400">
+                🎰 Tragamonedas
+              </button>
             </li>
             <li>
-              <button onClick={() => navigate("/apuestas-futbol")} className="w-full text-left hover:text-yellow-400">⚽ Apuestas de Fútbol</button>
+              <button onClick={() => navigate("/apuestas-futbol")} className="w-full text-left hover:text-yellow-400">
+                ⚽ Apuestas de Fútbol
+              </button>
             </li>
             <li>
-              <button onClick={() => navigate("/ruleta")} className="w-full text-left hover:text-yellow-400">🎡 Ruleta</button>
+              <button onClick={() => navigate("/ruleta")} className="w-full text-left hover:text-yellow-400">
+                🎡 Ruleta
+              </button>
             </li>
             <li>
-              <button onClick={() => navigate("/juegos-futuros")} className="w-full text-left hover:text-yellow-400">🧩 Juegos Futuros</button>
+              <button onClick={() => navigate("/juegos-futuros")} className="w-full text-left hover:text-yellow-400">
+                🧩 Juegos Futuros
+              </button>
             </li>
           </ul>
         </div>
-        <button onClick={cerrarSesion} className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+        <button
+          onClick={cerrarSesion}
+          className="mt-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
           Cerrar sesión
         </button>
       </div>
 
       {/* Contenido principal */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 md:ml-64">
         {cargando ? (
           <h2 className="text-xl">Cargando datos del usuario...</h2>
         ) : (
           <div>
-            <h2 className="text-2xl font-bold mb-4">
-              Bienvenido, {usuario.name || usuario.nombre || usuario.username} 👋
-            </h2>
+            <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.name || usuario.nombre} 👋</h2>
             <p className="text-xl">
-              💰 Saldo actual: <span className="text-yellow-400">${usuario.balance.toFixed(2)}</span>
+              💰 Saldo actual:{" "}
+              <span className="text-yellow-400">${usuario.balance?.toFixed(2) || "0.00"}</span>
             </p>
           </div>
         )}
