@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const navigate = useNavigate();
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
@@ -16,14 +14,14 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email: correo, password }) // ✅ corregido aquí
+        body: JSON.stringify({ email: correo, password }) // 👈 importante: usar "email"
       });
 
       const datos = await respuesta.json();
 
-      if (respuesta.ok) {
+      if (respuesta.ok && datos.token) {
         localStorage.setItem("token", datos.token);
-        navigate("/dashboard");
+        window.location.href = "/dashboard"; // 👈 redirige directamente
       } else {
         setMensaje(datos.mensaje || "Credenciales inválidas");
       }
