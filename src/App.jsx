@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -9,18 +9,12 @@ import Ruleta from "./pages/Ruleta";
 import JuegosFuturos from "./pages/JuegosFuturos";
 
 function App() {
-  const [autenticado, setAutenticado] = useState(false);
-  const [verificando, setVerificando] = useState(true);
+  const [autenticado, setAutenticado] = useState(null); // null = cargando
 
   useEffect(() => {
     const verificarToken = async () => {
       const token = localStorage.getItem("token");
-
-      if (!token) {
-        setAutenticado(false);
-        setVerificando(false);
-        return;
-      }
+      if (!token) return setAutenticado(false);
 
       try {
         const res = await fetch("https://imperium-backend-bpkr.onrender.com/api/usuario/datos", {
@@ -39,14 +33,12 @@ function App() {
         localStorage.removeItem("token");
         setAutenticado(false);
       }
-
-      setVerificando(false);
     };
 
     verificarToken();
   }, []);
 
-  if (verificando) {
+  if (autenticado === null) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Cargando...</p>
@@ -57,13 +49,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Register />} />
-        <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Register />} />
-        <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Register />} />
-        <Route path="/ruleta" element={autenticado ? <Ruleta /> : <Register />} />
-        <Route path="/juegos-futuros" element={autenticado ? <JuegosFuturos /> : <Register />} />
+        <Route path="/" element={autenticado ? <Navigate to="/dashboard" /> : <Register />} />
+        <Route path="/login" element={<Login setAutenticado={setAutenticado} />} />
+        <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Navigate to="/" />} />
+        <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/" />} />
+        <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Navigate to="/" />} />
+        <Route path="/ruleta" element={autenticado ? <Ruleta /> : <Navigate to="/" />} />
+        <Route path="/juegos-futuros" element={autenticado ? <JuegosFuturos /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );
