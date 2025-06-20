@@ -3,8 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [nombre, setNombre] = useState("");
-  const [correo, setCorreo] = useState(""); // ✅ corregido
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -14,20 +14,21 @@ const Register = () => {
 
     try {
       const res = await axios.post("https://imperium-backend-bpkr.onrender.com/api/auth/register", {
-        nombre,
-        correo, // ✅ corregido
+        name,
+        email,
         password,
       });
 
       if (res.data) {
         setMensaje("✅ Registro exitoso. Ya puedes iniciar sesión.");
-        setNombre("");
-        setCorreo("");
+        setName("");
+        setEmail("");
         setPassword("");
 
+        // Redirige a login después de 2 segundos
         setTimeout(() => {
           navigate("/login");
-        }, 1500);
+        }, 2000);
       } else {
         setMensaje("Error al registrarse");
       }
@@ -47,17 +48,17 @@ const Register = () => {
         <input
           type="text"
           placeholder="Nombre"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="w-full p-2 mb-4 rounded text-black"
           required
         />
 
         <input
           type="email"
-          placeholder="Correo"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full p-2 mb-4 rounded text-black"
           required
         />
@@ -79,15 +80,8 @@ const Register = () => {
         </button>
 
         {mensaje && (
-          <p className="mt-4 text-center text-sm text-green-400">{mensaje}</p>
+          <p className="mt-4 text-center text-green-400 text-sm">{mensaje}</p>
         )}
-
-        <p
-          onClick={() => navigate("/login")}
-          className="mt-4 text-sm text-center text-yellow-400 cursor-pointer hover:underline"
-        >
-          ¿Ya tienes cuenta? Inicia sesión
-        </p>
       </form>
     </div>
   );
