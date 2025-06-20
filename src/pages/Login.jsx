@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [correo, setCorreo] = useState("");
+  const [email, setEmail] = useState(""); // <--- Cambiado a email
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -14,23 +14,22 @@ const Login = () => {
       const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ correo, password }),
+        body: JSON.stringify({ email, password }) // 👈 Importante: debe ser "email"
       });
 
       const datos = await respuesta.json();
 
       if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
-        // Redirige y recarga para que App.jsx detecte el nuevo token
         navigate("/dashboard");
-        window.location.reload(); // 🔁 Forzamos que App.jsx verifique token otra vez
+        window.location.reload(); // Recarga para que App.jsx detecte el token
       } else {
-        setMensaje(datos.mensaje || "Credenciales incorrectas");
+        setMensaje(datos.mensaje || "Credenciales inválidas");
       }
     } catch (error) {
-      setMensaje("Error al conectar con el servidor");
+      setMensaje("Error del servidor");
     }
   };
 
@@ -42,8 +41,8 @@ const Login = () => {
         <input
           type="email"
           placeholder="Correo"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
           required
         />
