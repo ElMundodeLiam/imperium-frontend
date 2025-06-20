@@ -33,8 +33,7 @@ export default function Dashboard() {
         setCargando(false);
       } catch (error) {
         console.error("Error al obtener datos:", error);
-        localStorage.removeItem("token");
-        navigate("/");
+        setCargando(false);
       }
     };
 
@@ -84,7 +83,7 @@ export default function Dashboard() {
       {/* Contenido principal */}
       <div className="flex-1 p-6">
         {cargando ? (
-          <h2 className="text-xl text-center">Cargando datos del usuario...</h2>
+          <h2 className="text-xl">Cargando datos del usuario...</h2>
         ) : (
           <div>
             <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.nombre} 👋</h2>
