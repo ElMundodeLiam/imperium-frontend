@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate();
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
@@ -12,21 +14,23 @@ const Login = () => {
       const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: correo, password }) // 👈 importante: usar "email"
+        body: JSON.stringify({ correo, password }),
       });
 
       const datos = await respuesta.json();
 
-      if (respuesta.ok && datos.token) {
+      if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
-        window.location.href = "/dashboard"; // 👈 redirige directamente
+        // Redirige y recarga para que App.jsx detecte el nuevo token
+        navigate("/dashboard");
+        window.location.reload(); // 🔁 Forzamos que App.jsx verifique token otra vez
       } else {
-        setMensaje(datos.mensaje || "Credenciales inválidas");
+        setMensaje(datos.mensaje || "Credenciales incorrectas");
       }
     } catch (error) {
-      setMensaje("Error del servidor");
+      setMensaje("Error al conectar con el servidor");
     }
   };
 
@@ -60,7 +64,7 @@ const Login = () => {
           Iniciar Sesión
         </button>
 
-        {mensaje && <p className="mt-4 text-center text-red-500">{mensaje}</p>}
+        {mensaje && <p className="mt-4 text-center text-red-400">{mensaje}</p>}
       </form>
     </div>
   );
