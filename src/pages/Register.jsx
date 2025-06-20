@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [name, setName] = useState("");
+  const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -14,21 +14,16 @@ const Register = () => {
 
     try {
       const res = await axios.post("https://imperium-backend-bpkr.onrender.com/api/auth/register", {
-        name,
+        nombre,
         email,
         password,
       });
 
       if (res.data) {
         setMensaje("✅ Registro exitoso. Ya puedes iniciar sesión.");
-        setName("");
+        setNombre("");
         setEmail("");
         setPassword("");
-
-        // Redirige a login después de 2 segundos
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
       } else {
         setMensaje("Error al registrarse");
       }
@@ -48,15 +43,15 @@ const Register = () => {
         <input
           type="text"
           placeholder="Nombre"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
           className="w-full p-2 mb-4 rounded text-black"
           required
         />
 
         <input
           type="email"
-          placeholder="Correo electrónico"
+          placeholder="Correo"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full p-2 mb-4 rounded text-black"
@@ -82,6 +77,18 @@ const Register = () => {
         {mensaje && (
           <p className="mt-4 text-center text-green-400 text-sm">{mensaje}</p>
         )}
+
+        {/* Enlace a Iniciar Sesión */}
+        <p className="mt-4 text-center text-sm">
+          ¿Ya tienes cuenta?{" "}
+          <button
+            onClick={() => navigate("/login")}
+            className="text-yellow-400 underline"
+            type="button"
+          >
+            Iniciar sesión
+          </button>
+        </p>
       </form>
     </div>
   );
