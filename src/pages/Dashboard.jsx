@@ -87,7 +87,7 @@ export default function Dashboard() {
           <h2 className="text-xl text-center">Cargando datos del usuario...</h2>
         ) : (
           <div>
-            <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.name} 👋</h2>
+            <h2 className="text-2xl font-bold mb-4">Bienvenido, {usuario.nombre} 👋</h2>
             <p className="text-xl">
               💰 Saldo actual: <span className="text-yellow-400">${usuario.balance.toFixed(2)}</span>
             </p>
