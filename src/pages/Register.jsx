@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [nombre, setNombre] = useState("");
-  const [correo, setCorreo] = useState(""); // Correo correcto
+  const [correo, setCorreo] = useState(""); // ✅ corregido
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const Register = () => {
     try {
       const res = await axios.post("https://imperium-backend-bpkr.onrender.com/api/auth/register", {
         nombre,
-        correo, // 👈 Este campo es importante
+        correo, // ✅ corregido
         password,
       });
 
@@ -25,7 +25,6 @@ const Register = () => {
         setCorreo("");
         setPassword("");
 
-        // Redirigir al login luego de unos segundos
         setTimeout(() => {
           navigate("/login");
         }, 1500);
@@ -87,7 +86,7 @@ const Register = () => {
           onClick={() => navigate("/login")}
           className="mt-4 text-sm text-center text-yellow-400 cursor-pointer hover:underline"
         >
-          ¿Ya tienes cuenta? Iniciar Sesión
+          ¿Ya tienes cuenta? Inicia sesión
         </p>
       </form>
     </div>
