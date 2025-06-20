@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = ({ setAutenticado }) => {
-  const [correo, setCorreo] = useState("");
+const Login = () => {
+  const [correo, setCorreo] = useState(""); // 👈 Asegúrate que este sea "correo"
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -16,20 +16,19 @@ const Login = ({ setAutenticado }) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ correo, password })
+        body: JSON.stringify({ correo, password }) // 👈 Enviar "correo", NO "email"
       });
 
       const datos = await respuesta.json();
 
       if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
-        setAutenticado(true); // activa el estado autenticado
         navigate("/dashboard");
       } else {
         setMensaje(datos.mensaje || "Credenciales inválidas");
       }
     } catch (error) {
-      setMensaje("Error al conectar con el servidor");
+      setMensaje("Error del servidor");
     }
   };
 
@@ -64,6 +63,13 @@ const Login = ({ setAutenticado }) => {
         </button>
 
         {mensaje && <p className="mt-4 text-center text-red-500">{mensaje}</p>}
+
+        <p
+          onClick={() => navigate("/")}
+          className="mt-4 text-sm text-center text-yellow-400 cursor-pointer hover:underline"
+        >
+          ¿No tienes cuenta? Regístrate
+        </p>
       </form>
     </div>
   );
