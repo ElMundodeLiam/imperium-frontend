@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -9,7 +9,8 @@ import Ruleta from "./pages/Ruleta";
 import JuegosFuturos from "./pages/JuegosFuturos";
 
 function App() {
-  const [autenticado, setAutenticado] = useState(null); // null = en espera
+  const [autenticado, setAutenticado] = useState(false);
+  const [verificando, setVerificando] = useState(true);
 
   useEffect(() => {
     const verificarToken = async () => {
@@ -17,6 +18,7 @@ function App() {
 
       if (!token) {
         setAutenticado(false);
+        setVerificando(false);
         return;
       }
 
@@ -37,12 +39,14 @@ function App() {
         localStorage.removeItem("token");
         setAutenticado(false);
       }
+
+      setVerificando(false);
     };
 
     verificarToken();
   }, []);
 
-  if (autenticado === null) {
+  if (verificando) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p>Cargando...</p>
@@ -53,13 +57,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={autenticado ? <Navigate to="/dashboard" /> : <Register />} />
-        <Route path="/login" element={autenticado ? <Navigate to="/dashboard" /> : <Login />} />
-        <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Navigate to="/" />} />
-        <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Navigate to="/" />} />
-        <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Navigate to="/" />} />
-        <Route path="/ruleta" element={autenticado ? <Ruleta /> : <Navigate to="/" />} />
-        <Route path="/juegos-futuros" element={autenticado ? <JuegosFuturos /> : <Navigate to="/" />} />
+        <Route path="/" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={autenticado ? <Dashboard /> : <Register />} />
+        <Route path="/tragamonedas" element={autenticado ? <Tragamonedas /> : <Register />} />
+        <Route path="/apuestas-futbol" element={autenticado ? <ApuestasFutbol /> : <Register />} />
+        <Route path="/ruleta" element={autenticado ? <Ruleta /> : <Register />} />
+        <Route path="/juegos-futuros" element={autenticado ? <JuegosFuturos /> : <Register />} />
       </Routes>
     </Router>
   );
