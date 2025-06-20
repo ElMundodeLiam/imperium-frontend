@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const [email, setEmail] = useState(""); // <--- Cambiado a email
+const Login = ({ setAutenticado }) => {
+  const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -14,17 +14,17 @@ const Login = () => {
       const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }) // 👈 Importante: debe ser "email"
+        body: JSON.stringify({ correo, password }),
       });
 
       const datos = await respuesta.json();
 
       if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
+        setAutenticado(true); // ✅ ACTUALIZA el estado global
         navigate("/dashboard");
-        window.location.reload(); // Recarga para que App.jsx detecte el token
       } else {
         setMensaje(datos.mensaje || "Credenciales inválidas");
       }
@@ -35,14 +35,17 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <form onSubmit={manejarEnvio} className="bg-gray-900 p-8 rounded shadow-md w-full max-w-md">
+      <form
+        onSubmit={manejarEnvio}
+        className="bg-gray-900 p-8 rounded shadow-md w-full max-w-md"
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
 
         <input
           type="email"
           placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
           className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
           required
         />
@@ -63,7 +66,7 @@ const Login = () => {
           Iniciar Sesión
         </button>
 
-        {mensaje && <p className="mt-4 text-center text-red-400">{mensaje}</p>}
+        {mensaje && <p className="mt-4 text-center text-red-500">{mensaje}</p>}
       </form>
     </div>
   );
