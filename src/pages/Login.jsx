@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = ({ setAutenticado }) => {
-  const [email, setEmail] = useState("");
+  const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -16,20 +16,20 @@ const Login = ({ setAutenticado }) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password }) // ✅ CAMBIO AQUÍ
+        body: JSON.stringify({ correo, password })
       });
 
       const datos = await respuesta.json();
 
       if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
-        setAutenticado(true);
+        setAutenticado(true); // activa el estado autenticado
         navigate("/dashboard");
       } else {
         setMensaje(datos.mensaje || "Credenciales inválidas");
       }
     } catch (error) {
-      setMensaje("Error del servidor");
+      setMensaje("Error al conectar con el servidor");
     }
   };
 
@@ -41,8 +41,8 @@ const Login = ({ setAutenticado }) => {
         <input
           type="email"
           placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)} // ✅ CAMBIO AQUÍ
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
           className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
           required
         />
