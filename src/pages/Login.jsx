@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [correo, setCorreo] = useState(""); // 👈 Asegúrate que este sea "correo"
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ correo, password }) // 👈 Enviar "correo", NO "email"
+        body: JSON.stringify({ email, password }) // ahora se usa "email"
       });
 
       const datos = await respuesta.json();
@@ -39,9 +39,9 @@ const Login = () => {
 
         <input
           type="email"
-          placeholder="Correo"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
           required
         />
@@ -63,13 +63,6 @@ const Login = () => {
         </button>
 
         {mensaje && <p className="mt-4 text-center text-red-500">{mensaje}</p>}
-
-        <p
-          onClick={() => navigate("/")}
-          className="mt-4 text-sm text-center text-yellow-400 cursor-pointer hover:underline"
-        >
-          ¿No tienes cuenta? Regístrate
-        </p>
       </form>
     </div>
   );
