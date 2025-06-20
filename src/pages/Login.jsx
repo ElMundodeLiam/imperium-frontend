@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");         // ✅ ahora es "email"
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -14,9 +14,9 @@ const Login = () => {
       const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }) // ahora se usa "email"
+        body: JSON.stringify({ correo: email, password }), // 👈 usamos "correo" en el cuerpo para el backend
       });
 
       const datos = await respuesta.json();
@@ -34,15 +34,18 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <form onSubmit={manejarEnvio} className="bg-gray-900 p-8 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
+      <form
+        onSubmit={manejarEnvio}
+        className="bg-gray-900 p-6 rounded shadow-md w-80"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
 
         <input
           type="email"
-          placeholder="Correo electrónico"
+          placeholder="Correo"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
+          className="w-full p-2 mb-4 rounded text-black"
           required
         />
 
@@ -51,7 +54,7 @@ const Login = () => {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
+          className="w-full p-2 mb-4 rounded text-black"
           required
         />
 
@@ -62,7 +65,9 @@ const Login = () => {
           Iniciar Sesión
         </button>
 
-        {mensaje && <p className="mt-4 text-center text-red-500">{mensaje}</p>}
+        {mensaje && (
+          <p className="mt-4 text-center text-red-500">{mensaje}</p>
+        )}
       </form>
     </div>
   );
