@@ -16,7 +16,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password }) // asegúrate de usar 'email'
+        body: JSON.stringify({ correo: email, password }) // ✅ Este es el cambio importante
       });
 
       const datos = await respuesta.json();
@@ -34,15 +34,15 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <form onSubmit={manejarEnvio} className="bg-gray-900 p-6 rounded shadow-md w-80">
-        <h2 className="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
+      <form onSubmit={manejarEnvio} className="bg-gray-900 p-8 rounded shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
 
         <input
           type="email"
           placeholder="Correo"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 mb-4 rounded text-black"
+          className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
           required
         />
 
@@ -51,7 +51,7 @@ const Login = () => {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 mb-4 rounded text-black"
+          className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
           required
         />
 
@@ -62,19 +62,7 @@ const Login = () => {
           Iniciar Sesión
         </button>
 
-        {mensaje && <p className="mt-4 text-center text-red-400 text-sm">{mensaje}</p>}
-
-        {/* Enlace para ir al registro */}
-        <p className="mt-4 text-center text-sm">
-          ¿No tienes una cuenta?{" "}
-          <button
-            onClick={() => navigate("/")}
-            className="text-yellow-400 underline"
-            type="button"
-          >
-            Registrarse
-          </button>
-        </p>
+        {mensaje && <p className="mt-4 text-center text-red-500">{mensaje}</p>}
       </form>
     </div>
   );
