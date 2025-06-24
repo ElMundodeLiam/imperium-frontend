@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // Usamos 'email' como clave
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -16,13 +16,14 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ correo: email, password }) // ✅ Este es el cambio importante
+        body: JSON.stringify({ email, password }) // Usa 'email'
       });
 
       const datos = await respuesta.json();
 
       if (respuesta.ok) {
         localStorage.setItem("token", datos.token);
+        setMensaje(""); // Limpia mensaje
         navigate("/dashboard");
       } else {
         setMensaje(datos.mensaje || "Credenciales inválidas");
