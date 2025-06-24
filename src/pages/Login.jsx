@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");         // ✅ ahora es "email"
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
@@ -14,9 +14,9 @@ const Login = () => {
       const respuesta = await fetch("https://imperium-backend-bpkr.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ correo: email, password }), // 👈 usamos "correo" en el cuerpo para el backend
+        body: JSON.stringify({ email, password }) // asegúrate de usar 'email'
       });
 
       const datos = await respuesta.json();
@@ -34,10 +34,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <form
-        onSubmit={manejarEnvio}
-        className="bg-gray-900 p-6 rounded shadow-md w-80"
-      >
+      <form onSubmit={manejarEnvio} className="bg-gray-900 p-6 rounded shadow-md w-80">
         <h2 className="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
 
         <input
@@ -65,9 +62,19 @@ const Login = () => {
           Iniciar Sesión
         </button>
 
-        {mensaje && (
-          <p className="mt-4 text-center text-red-500">{mensaje}</p>
-        )}
+        {mensaje && <p className="mt-4 text-center text-red-400 text-sm">{mensaje}</p>}
+
+        {/* Enlace para ir al registro */}
+        <p className="mt-4 text-center text-sm">
+          ¿No tienes una cuenta?{" "}
+          <button
+            onClick={() => navigate("/")}
+            className="text-yellow-400 underline"
+            type="button"
+          >
+            Registrarse
+          </button>
+        </p>
       </form>
     </div>
   );
