@@ -1,34 +1,44 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [nombre, setNombre] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("https://imperium-backend-bpkr.onrender.com/api/auth/register", {
-        nombre,
-        email,
-        password,
+      const res = await fetch("https://imperium-backend-bpkr.onrender.com/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
       });
 
-      if (res.data) {
+      const data = await res.json();
+
+      if (res.ok) {
         setMensaje("✅ Registro exitoso. Ya puedes iniciar sesión.");
-        setNombre("");
+        setName("");
         setEmail("");
         setPassword("");
+
+        // Redirigir al login después de un breve mensaje
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       } else {
-        setMensaje("Error al registrarse");
+        setMensaje(data.mensaje || "Error al registrarse.");
       }
     } catch (error) {
-      setMensaje("El correo ya está registrado o hubo un error");
+      console.error(error);
+      setMensaje("Error en el servidor");
     }
   };
 
@@ -43,8 +53,8 @@ const Register = () => {
         <input
           type="text"
           placeholder="Nombre"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="w-full p-2 mb-4 rounded text-black"
           required
         />
@@ -75,19 +85,17 @@ const Register = () => {
         </button>
 
         {mensaje && (
-          <p className="mt-4 text-center text-green-400 text-sm">{mensaje}</p>
+          <p className="mt-4 text-center text-sm text-green-400">{mensaje}</p>
         )}
 
-        {/* Enlace a Iniciar Sesión */}
         <p className="mt-4 text-center text-sm">
           ¿Ya tienes cuenta?{" "}
-          <button
+          <span
+            className="text-yellow-400 cursor-pointer underline"
             onClick={() => navigate("/login")}
-            className="text-yellow-400 underline"
-            type="button"
           >
             Iniciar sesión
-          </button>
+          </span>
         </p>
       </form>
     </div>
