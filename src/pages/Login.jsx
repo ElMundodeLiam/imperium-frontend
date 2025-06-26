@@ -1,54 +1,43 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("https://imperium-backend-bpkr.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const res = await axios.post("https://imperium-backend-bpkr.onrender.com/api/auth/login", {
+        email,
+        password,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/dashboard");
-      } else {
-        setMensaje(data.mensaje || "Credenciales inválidas");
-      }
+      localStorage.setItem("token", res.data.token);
+      onLogin(); // activa sesión en App.jsx
+      navigate("/dashboard");
     } catch (error) {
-      console.error(error);
-      setMensaje("Error en el servidor");
+      setMensaje("Credenciales inválidas");
+      setTimeout(() => setMensaje(""), 3000);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-gray-900 p-6 rounded shadow-md w-80"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
+    <div className="flex items-center justify-center min-h-screen bg-black text-white">
+      <form onSubmit={handleSubmit} className="bg-gray-900 p-8 rounded shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">🎰 Iniciar Sesión</h2>
 
         <input
           type="email"
-          placeholder="Correo"
+          placeholder="Correo electrónico"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 mb-4 rounded text-black"
           required
+          className="w-full mb-4 px-4 py-2 rounded bg-gray-800 text-white"
         />
 
         <input
@@ -56,33 +45,18 @@ const Login = () => {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 mb-4 rounded text-black"
           required
+          className="w-full mb-4 px-4 py-2 rounded bg-gray-800 text-white"
         />
 
-        <button
-          type="submit"
-          className="w-full bg-yellow-500 hover:bg-yellow-600 p-2 rounded font-semibold text-black"
-        >
+        <button type="submit" className="w-full bg-yellow-500 hover:bg-yellow-600 text-black py-2 rounded font-bold">
           Iniciar Sesión
         </button>
 
-        {mensaje && (
-          <p className="mt-4 text-center text-sm text-red-400">{mensaje}</p>
-        )}
-
-        <p className="mt-4 text-center text-sm">
-          ¿No tienes una cuenta?{" "}
-          <span
-            className="text-blue-400 cursor-pointer underline"
-            onClick={() => navigate("/")}
-          >
-            Regístrate
-          </span>
-        </p>
+        {mensaje && <p className="text-red-500 text-center mt-4">{mensaje}</p>}
       </form>
     </div>
   );
-};
+}
 
 export default Login;
